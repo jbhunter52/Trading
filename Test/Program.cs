@@ -11,9 +11,9 @@ namespace Test
         static void Main(string[] args)
         {
             Trading.Database db = new Trading.Database(@"C:\Users\Jared\AppData\Local\TradeData\test.db");
-            db.GetSymbol("aapl");
+            db.DownloadSymbol("aapl");
 
-            Trading.Company appl = db.LoadSymbol("appl");
+            Trading.Company appl = db.GetSymbol("appl");
 
 
         }

@@ -19,7 +19,7 @@ namespace Trading
             DB = new LiteDatabase(@filename);
 
         }
-        public void GetSymbol(string symbol)
+        public Company DownloadSymbol(string symbol, bool addtoDatabase)
         {
             List<HistoricalDataResponse> data = new List<HistoricalDataResponse>();
             var IEXTrading_API_PATH = "https://api.iextrading.com/1.0/stock/{0}/chart/1y";
@@ -52,24 +52,24 @@ namespace Trading
                     }                    
                 }
             }
-            Company c = new Company
+
+            Company c = new Company(symbol, data);
+
+            if (addtoDatabase)
             {
-                Name = "",
-                Symbol = symbol,
-                Data = data
-            };
+                var col = DB.GetCollection<Company>("data");
 
-            var col = DB.GetCollection<Company>("data");
-
-            col.EnsureIndex(x => x.Symbol, true);
-            col.Insert(c);
-            col.Update(c);
+                col.EnsureIndex(x => x.Symbol, true);
+                col.Insert(c);
+                col.Update(c);
+            }
+            return c;
         }
-        public Company LoadSymbol(string symbol)
+        public Company GetSymbol(string symbol)
         {
             var col = DB.GetCollection<Trading.Company>("data");
 
-            var c = col.FindOne(x => x.Symbol.Equals("appl", StringComparison.CurrentCultureIgnoreCase));
+            var c = col.FindOne(x => x.Symbol.Equals(symbol, StringComparison.CurrentCultureIgnoreCase));
             return (Company)c;
         }
     }

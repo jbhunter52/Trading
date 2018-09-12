@@ -12,5 +12,16 @@ namespace Trading
         public string Name { get; set; }
         public string Symbol {get;set;}
         public List<HistoricalDataResponse> Data { get; set; }
+
+        public Company(string symbol, List<HistoricalDataResponse> data)
+        {
+            this.Symbol = symbol;
+            this.Data = data;
+            this.Name = "";
+
+            this.Data.OrderBy(x => DateTime.Parse(x.date));
+
+            foreach (List)
+        }
     }
 }
