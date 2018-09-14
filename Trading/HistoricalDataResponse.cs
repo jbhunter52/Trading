@@ -20,7 +20,9 @@ namespace Trading
         public double vwap { get; set; }
         public string label { get; set; }
         public double changeOverTime { get; set; }
-        public int MovingAverageDays { get; set; }
-        public double MovingAverage { get; set; }
+        public double MovingAverageClose { get; set; }
+        public int MovingAverageVolume { get; set; }
     }
+
+   
 }

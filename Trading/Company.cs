@@ -19,9 +19,20 @@ namespace Trading
             this.Data = data;
             this.Name = "";
 
+            //Maybe it would be faster to reverse???
             this.Data.OrderBy(x => DateTime.Parse(x.date));
-
-            foreach (List)
+            
+            double[] close = (from dp in this.Data
+                             select dp.close).ToArray();
+            double[] maClose = MathHelpers.MovingAverage(close, 50);
+            int[] vol = (from dp in this.Data
+                              select dp.volume).ToArray();
+            int[] maVol = MathHelpers.MovingAverage(vol, 50);
+            for (int i = 0; i < this.Data.Count; i++)
+            {
+                this.Data[i].MovingAverageClose = maClose[i];
+                this.Data[i].MovingAverageVolume = maVol[i];
+            }
         }
     }
 }

@@ -28,20 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.buttonGo = new System.Windows.Forms.Button();
+            this.textBoxSymbols = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.chartValue = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartVolume = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.textBoxSymbols = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.buttonGo = new System.Windows.Forms.Button();
+            this.comboBoxDuration = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -63,9 +62,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.comboBoxDuration);
             this.splitContainer1.Panel1.Controls.Add(this.buttonGo);
-            this.splitContainer1.Panel1.Controls.Add(this.checkBox2);
-            this.splitContainer1.Panel1.Controls.Add(this.checkBox1);
             this.splitContainer1.Panel1.Controls.Add(this.textBoxSymbols);
             // 
             // splitContainer1.Panel2
@@ -74,6 +72,24 @@
             this.splitContainer1.Size = new System.Drawing.Size(590, 523);
             this.splitContainer1.SplitterDistance = 92;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // buttonGo
+            // 
+            this.buttonGo.Location = new System.Drawing.Point(363, 30);
+            this.buttonGo.Name = "buttonGo";
+            this.buttonGo.Size = new System.Drawing.Size(39, 23);
+            this.buttonGo.TabIndex = 3;
+            this.buttonGo.Text = "Go";
+            this.buttonGo.UseVisualStyleBackColor = true;
+            this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
+            // 
+            // textBoxSymbols
+            // 
+            this.textBoxSymbols.Location = new System.Drawing.Point(59, 34);
+            this.textBoxSymbols.Name = "textBoxSymbols";
+            this.textBoxSymbols.Size = new System.Drawing.Size(297, 20);
+            this.textBoxSymbols.TabIndex = 0;
+            this.textBoxSymbols.Text = "aapl";
             // 
             // splitContainer2
             // 
@@ -95,73 +111,45 @@
             // 
             // chartValue
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartValue.ChartAreas.Add(chartArea1);
+            chartArea3.Name = "ChartArea1";
+            this.chartValue.ChartAreas.Add(chartArea3);
             this.chartValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend1.Name = "Legend1";
-            this.chartValue.Legends.Add(legend1);
+            legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend3.Name = "Legend1";
+            this.chartValue.Legends.Add(legend3);
             this.chartValue.Location = new System.Drawing.Point(0, 0);
             this.chartValue.Name = "chartValue";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartValue.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartValue.Series.Add(series3);
             this.chartValue.Size = new System.Drawing.Size(590, 305);
             this.chartValue.TabIndex = 0;
             // 
             // chartVolume
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartVolume.ChartAreas.Add(chartArea2);
+            chartArea4.Name = "ChartArea1";
+            this.chartVolume.ChartAreas.Add(chartArea4);
             this.chartVolume.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend2.Name = "Legend1";
-            this.chartVolume.Legends.Add(legend2);
+            legend4.Enabled = false;
+            legend4.Name = "Legend1";
+            this.chartVolume.Legends.Add(legend4);
             this.chartVolume.Location = new System.Drawing.Point(0, 0);
             this.chartVolume.Name = "chartVolume";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartVolume.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chartVolume.Series.Add(series4);
             this.chartVolume.Size = new System.Drawing.Size(590, 118);
             this.chartVolume.TabIndex = 1;
             // 
-            // textBoxSymbols
+            // comboBoxDuration
             // 
-            this.textBoxSymbols.Location = new System.Drawing.Point(59, 34);
-            this.textBoxSymbols.Name = "textBoxSymbols";
-            this.textBoxSymbols.Size = new System.Drawing.Size(297, 20);
-            this.textBoxSymbols.TabIndex = 0;
-            this.textBoxSymbols.Text = "aapl";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(438, 12);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(80, 17);
-            this.checkBox1.TabIndex = 1;
-            this.checkBox1.Text = "checkBox1";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(438, 34);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(80, 17);
-            this.checkBox2.TabIndex = 2;
-            this.checkBox2.Text = "checkBox2";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // buttonGo
-            // 
-            this.buttonGo.Location = new System.Drawing.Point(363, 30);
-            this.buttonGo.Name = "buttonGo";
-            this.buttonGo.Size = new System.Drawing.Size(39, 23);
-            this.buttonGo.TabIndex = 3;
-            this.buttonGo.Text = "Go";
-            this.buttonGo.UseVisualStyleBackColor = true;
-            this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
+            this.comboBoxDuration.FormattingEnabled = true;
+            this.comboBoxDuration.Location = new System.Drawing.Point(452, 13);
+            this.comboBoxDuration.Name = "comboBoxDuration";
+            this.comboBoxDuration.Size = new System.Drawing.Size(106, 21);
+            this.comboBoxDuration.TabIndex = 4;
             // 
             // Form1
             // 
@@ -190,12 +178,11 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button buttonGo;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.TextBox textBoxSymbols;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartValue;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartVolume;
+        private System.Windows.Forms.ComboBox comboBoxDuration;
     }
 }
 

@@ -55,6 +55,7 @@
     <Compile Include="Company.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="HistoricalDataResponse.cs" />
+    <Compile Include="IEXData.cs" />
     <Compile Include="MovingAverage.cs" />
     <Compile Include="TradeData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
