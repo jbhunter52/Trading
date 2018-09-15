@@ -10,10 +10,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            Trading.Database db = new Trading.Database(@"C:\Users\Jared\AppData\Local\TradeData\test.db");
-            db.DownloadSymbol("aapl");
+            //Trading.Database db = new Trading.Database(@"C:\Users\Jared\AppData\Local\TradeData\test.db");
+            //db.DownloadSymbol("aapl");
 
-            Trading.Company appl = db.GetSymbol("appl");
+            Trading.Company aapl = Trading.IEXData.DownloadSymbol("aapl", Trading.IEXData.HistoryType.TwoYear);
+
+            //List<Trading.SymbolData> symbols = Trading.IEXData.DownloadSymbolList();
 
 
         }

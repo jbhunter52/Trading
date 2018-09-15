@@ -18,8 +18,9 @@ namespace Trading
         public Point C;
         public Point D;
         public double Gamma;
+        public CupHandleParameters Parameters;
 
-        public CupHandle(CupHandleParameters params)
+        public CupHandle(CupHandleParameters parameters)
         {
             Close = new List<double>();
             Volume = new List<int>();
@@ -30,24 +31,52 @@ namespace Trading
             C = new Point();
             D = new Point();
             Gamma = 0;
+            Parameters = parameters;
         }
     }
 
     public class CupHandleParameters
     {
-        public Range<int> Setup;
-        public Range<int> CupLeft;
-        public Range<int> CupRight;
-        public Range<int> Handle;
+        public Range<int> Setup; //K-A
+        public Range<int> CupLeft; //A-B
+        public Range<int> CupRight; //B-C
+        public Range<int> Handle; //C-D
+        public Range<double> PivotRatio; //Pc/Pa
 
-        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle)
+        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<double> pivotRatio)
         {
-            this.Setup = setup;
-            this.CupLeft = cupLeft;
-            this.CupRight = cupRight;
-            this.Handle = handle;
+            Setup = setup;
+            CupLeft = cupLeft;
+            CupRight = cupRight;
+            Handle = handle;
+        }
+
+        public CupHandleParameters(CupHandleDefinition ch)
+        {
+            if (ch == CupHandleDefinition.Haiku1)
+            {
+                Setup = new Range<int>(2, 30);
+                CupLeft = new Range<int>(20, 120);
+                CupRight = new Range<int>(3, 25);
+                Handle = new Range<int>(2, 30);
+            }
+            if (ch == CupHandleDefinition.Haiku3)
+            {
+                Setup = new Range<int>(2, 50);
+                CupLeft = new Range<int>(20, 147);
+                CupRight = new Range<int>(3, 25);
+                Handle = new Range<int>(2, 30);
+                PivotRatio = new Range<double>(0.78, 1.1);
+            }
+
         }
     }
+
+    public enum CupHandleDefinition
+    {
+        Haiku1,
+        Haiku3
+    };
 
     public class Point
     {
@@ -59,14 +88,14 @@ namespace Trading
 
         public Point(int index, double close, int volume, DateTime date)
         {
-            this.Index = index;
-            this.Close = close;
-            this.Volume = volume;
-            this.Date = date;
+            Index = index;
+            Close = close;
+            Volume = volume;
+            Date = date;
         }
         public Point()
         {
-            this.Index = -1;
+            Index = -1;
         }
     }
 
@@ -74,6 +103,11 @@ namespace Trading
     /// <typeparam name="T">Generic parameter.</typeparam>
     public class Range<T> where T : IComparable<T>
     {
+        public Range(T min, T max)
+        {
+            this.Minimum = min;
+            this.Maximum = max;
+        }
         /// <summary>Minimum value of the range.</summary>
         public T Minimum { get; set; }
 

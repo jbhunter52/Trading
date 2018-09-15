@@ -22,6 +22,8 @@ namespace Trading
         public double changeOverTime { get; set; }
         public double MovingAverageClose { get; set; }
         public int MovingAverageVolume { get; set; }
+        public double RelativePriceVolume { get; set; }
+        public double MovingRelativePriceVolume { get; set; }
     }
 
    

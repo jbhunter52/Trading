@@ -50,7 +50,36 @@ namespace Trading
 
             return new Company(symbol, data);
         }
+        public static List<SymbolData> DownloadSymbolList()
+        {
 
+            List<SymbolData> symbols = new List<SymbolData>();
+            var IEXTrading_API_PATH = "https://api.iextrading.com/1.0/ref-data/symbols";
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                //For IP-API
+                client.BaseAddress = new Uri(IEXTrading_API_PATH);
+                HttpResponseMessage response = client.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+                if (response.IsSuccessStatusCode)
+                {
+                    var symbolList = response.Content.ReadAsAsync<List<SymbolData>>().GetAwaiter().GetResult();
+                    foreach (var symbolData in symbolList)
+                    {
+                        if (symbolData != null)
+                        {
+                            symbols.Add(symbolData);
+                        }
+                    }
+                }
+            }
+
+            return symbols;
+
+        }
         public enum HistoryType
         {
             OneYear,

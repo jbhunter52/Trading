@@ -35,8 +35,8 @@ namespace Trading
             rpv[0] = 0;
             for (int i = 1; i < close.Length; i++)
             {
-                double dClose = close[i] - close[i-1];
-                rpv[i] = vol[i] * dClose;
+                double y = (close[i] - close[i-1])/close[i-1];
+                rpv[i] = vol[i] * y;
             }
             marpv = MathHelpers.MovingAverage(rpv, 50);
 
