@@ -28,11 +28,27 @@ namespace Trading
             int[] vol = (from dp in this.Data
                               select dp.volume).ToArray();
             int[] maVol = MathHelpers.MovingAverage(vol, 50);
+
+            double[] rpv = new double[close.Length];
+            double[] marpv = new double[close.Length];
+
+            rpv[0] = 0;
+            for (int i = 1; i < close.Length; i++)
+            {
+                double dClose = close[i] - close[i-1];
+                rpv[i] = vol[i] * dClose;
+            }
+            marpv = MathHelpers.MovingAverage(rpv, 50);
+
             for (int i = 0; i < this.Data.Count; i++)
             {
                 this.Data[i].MovingAverageClose = maClose[i];
                 this.Data[i].MovingAverageVolume = maVol[i];
+                this.Data[i].RelativePriceVolume = rpv[i];
+                this.Data[i].MovingRelativePriceVolume = marpv[i];
             }
+
+            
         }
     }
 }
