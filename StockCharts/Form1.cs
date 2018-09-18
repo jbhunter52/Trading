@@ -70,10 +70,10 @@ namespace StockCharts
                 s.Color = colors[i];
                 s.ChartArea = "0";
                 s.XValueType = ChartValueType.DateTime;
-                foreach (Trading.HistoricalDataResponse data in c.Data)
+                for (int j = 0; j < c.Count; j++ )
                 {
-                    DateTime date = DateTime.Parse(data.label);
-                    float val = (float)data.close;
+                    DateTime date = DateTime.Parse(c.label[j]);
+                    float val = c.close[j];
                     s.Points.AddXY(date, val);
                 }
                 chartValue.Series.Add(s);
@@ -85,10 +85,10 @@ namespace StockCharts
                 maClose.Color = colors[i];
                 maClose.ChartArea = "0";
                 maClose.XValueType = ChartValueType.DateTime;
-                foreach (Trading.HistoricalDataResponse data in c.Data)
+                for (int j = 0; j < c.Count; j++)
                 {
-                    DateTime date = DateTime.Parse(data.label);
-                    float val = (float)data.MovingAverageClose;
+                    DateTime date = DateTime.Parse(c.label[j]);
+                    float val = c.MovingAverageClose[j];
                     maClose.Points.AddXY(date, val);
                 }
                 chartValue.Series.Add(maClose);
@@ -113,11 +113,11 @@ namespace StockCharts
             s.ChartType = SeriesChartType.Column;
             s.ChartArea = "0";
             s.XValueType = ChartValueType.DateTime;
-            
-            foreach (Trading.HistoricalDataResponse data in c.Data)
+
+            for (int i = 0; i < c.Count; i++)
             {
-                DateTime date = DateTime.Parse(data.label);
-                float val = (float)data.volume;
+                DateTime date = DateTime.Parse(c.label[i]);
+                float val = c.volume[i];
                 s.Points.AddXY(date, val);
             }
             s["PixelPointWidth"] = "1";
@@ -130,10 +130,10 @@ namespace StockCharts
             maVol.BorderDashStyle = ChartDashStyle.Solid;
             maVol.ChartArea = "0";
             maVol.XValueType = ChartValueType.DateTime;
-            foreach (Trading.HistoricalDataResponse data in c.Data)
+            for (int i = 0; i < c.Count; i++)
             {
-                DateTime date = DateTime.Parse(data.label);
-                float val = (float)data.MovingAverageVolume;
+                DateTime date = DateTime.Parse(c.label[i]);
+                float val = c.MovingAverageVolume[i];
                 maVol.Points.AddXY(date, val);
             }
             chartVolume.Series.Add(maVol);

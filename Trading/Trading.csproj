@@ -57,9 +57,8 @@
     <Compile Include="Database.cs" />
     <Compile Include="HistoricalDataResponse.cs" />
     <Compile Include="IEXData.cs" />
-    <Compile Include="MovingAverage.cs" />
+    <Compile Include="MathHelpers.cs" />
     <Compile Include="SymbolData.cs" />
-    <Compile Include="TradeData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -32,24 +32,78 @@ namespace Trading
                 if (response.IsSuccessStatusCode)
                 {
                     var historicalDataList = response.Content.ReadAsAsync<List<HistoricalDataResponse>>().GetAwaiter().GetResult();
-                    foreach (var historicalData in historicalDataList)
+
+                    if (historicalDataList.Count > 0)
                     {
-                        if (historicalData != null)
+                        foreach (var historicalData in historicalDataList)
                         {
-                            //Console.WriteLine("Open: " + historicalData.open);
-                            //Console.WriteLine("Close: " + historicalData.close);
-                            //Console.WriteLine("Low: " + historicalData.low);
-                            //Console.WriteLine("High: " + historicalData.high);
-                            //Console.WriteLine("Change: " + historicalData.change);
-                            //Console.WriteLine("Change Percentage: " + historicalData.changePercent);
-                            data.Add(historicalData);
+                            if (historicalData != null)
+                            {
+                                //Console.WriteLine("Open: " + historicalData.open);
+                                //Console.WriteLine("Close: " + historicalData.close);
+                                //Console.WriteLine("Low: " + historicalData.low);
+                                //Console.WriteLine("High: " + historicalData.high);
+                                //Console.WriteLine("Change: " + historicalData.change);
+                                //Console.WriteLine("Change Percentage: " + historicalData.changePercent);
+                                data.Add(historicalData);
+                            }
+                            else
+                            { return new Company(); }
                         }
                     }
+                    else
+                    { return new Company(); }
                 }
             }
 
             return new Company(symbol, data);
         }
+        //public static List<Company> DownloadSymbols(List<string> symbols, HistoryType ht)
+        //{
+        //    string years = "";
+        //    if (ht == HistoryType.OneYear) { years = "1y"; }
+        //    if (ht == HistoryType.TwoYear) { years = "2y"; }
+        //    if (ht == HistoryType.FiveYear) { years = "5y"; }
+        //    var IEXTrading_API_PATH = "https://api.iextrading.com/1.0/stock/{0}/chart/{1}";
+        //    List<string> requestsBatch = new List<string>();
+        //    foreach (string symbol in symbols)
+        //    {
+        //        string request = string.Format(IEXTrading_API_PATH, symbol, years);
+        //        requestsBatch.Add(request);
+        //    }
+
+        //    var httpClient = new HttpClient {Timeout = TimeSpan.FromMilliseconds(5)};
+        //    var taskList = new List<Task<Company>>();
+        //    for (int i = 0; i < requestsBatch.Count; i++ )
+        //    {
+        //        string myRequest = requestsBatch[i];
+        //        string sym = symbols[i];
+        //        // by virtue of not awaiting each call, you've already acheived parallelism
+        //        taskList.Add(GetResponseAsync(sym, myRequest));
+        //    }
+
+        //    try
+        //    {
+        //        // asynchronously wait until all tasks are complete
+        //        await Task.WhenAll(taskList.ToArray());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+
+        //}
+
+        //public async Task<Company> GetResponseAsync(string symbol, string myRequest)
+        //{
+        //    HttpClient httpClient = new HttpClient();
+        //    // no Task.Run here!
+        //    var response = await httpClient.GetAsync(myRequest);
+        //    List<HistoricalDataResponse> historicalDataList = await response.Content.ReadAsAsync<List<HistoricalDataResponse>>();
+
+        //    if (historicalDataList.Count > 0)
+        //        return new Company()
+        //}
+
         public static List<SymbolData> DownloadSymbolList()
         {
 

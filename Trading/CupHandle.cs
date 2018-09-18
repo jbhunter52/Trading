@@ -33,6 +33,13 @@ namespace Trading
             Gamma = 0;
             Parameters = parameters;
         }
+
+        public void Search(Company c)
+        {
+            int ind = 0;
+
+
+        }
     }
 
     public class CupHandleParameters
