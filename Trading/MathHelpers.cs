@@ -55,6 +55,21 @@ namespace Trading
             }
             catch { return new List<int>(); }
         }
+        public static string DateToString(DateTime dt)
+        {
+            int month = dt.Month;
+            string monthStr = month.ToString();
+            if (month < 10)
+                monthStr = "0" + monthStr;
 
+            int day = dt.Day;
+            string dayStr = day.ToString();
+            if (day < 10)
+                dayStr = "0" + dayStr;
+
+
+
+            return dt.Year + "-" + monthStr + "-" + dayStr;
+        }
     }
 }

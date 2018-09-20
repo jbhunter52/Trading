@@ -8,37 +8,26 @@ namespace Trading
 {
     public class CupHandle
     {
-        public List<double> Close;
-        public List<int> Volume;
-        public List<DateTime> Date;
-
         public Point K;
         public Point A;
         public Point B;
         public Point C;
         public Point D;
         public double Gamma;
-        public CupHandleParameters Parameters;
 
-        public CupHandle(CupHandleParameters parameters)
+        public CupHandle()
         {
-            Close = new List<double>();
-            Volume = new List<int>();
-            Date = new List<DateTime>();
             K = new Point();
             A = new Point();
             B = new Point();
             C = new Point();
             D = new Point();
             Gamma = 0;
-            Parameters = parameters;
         }
 
         public void Search(Company c)
         {
             int ind = 0;
-
-
         }
     }
 
@@ -48,6 +37,7 @@ namespace Trading
         public Range<int> CupLeft; //A-B
         public Range<int> CupRight; //B-C
         public Range<int> Handle; //C-D
+        public Range<int> AC;
         public Range<double> PivotRatio; //Pc/Pa
 
         public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<double> pivotRatio)
@@ -56,6 +46,7 @@ namespace Trading
             CupLeft = cupLeft;
             CupRight = cupRight;
             Handle = handle;
+            AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
         }
 
         public CupHandleParameters(CupHandleDefinition ch)
@@ -66,6 +57,8 @@ namespace Trading
                 CupLeft = new Range<int>(20, 120);
                 CupRight = new Range<int>(3, 25);
                 Handle = new Range<int>(2, 30);
+                PivotRatio = new Range<double>(0.78, 1.1);
+                AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
             }
             if (ch == CupHandleDefinition.Haiku3)
             {
@@ -74,6 +67,7 @@ namespace Trading
                 CupRight = new Range<int>(3, 25);
                 Handle = new Range<int>(2, 30);
                 PivotRatio = new Range<double>(0.78, 1.1);
+                AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
             }
 
         }
@@ -87,13 +81,13 @@ namespace Trading
 
     public class Point
     {
-        public double Close;
+        public float Close;
         public int Volume;
         public DateTime Date;
         public int Index;
 
 
-        public Point(int index, double close, int volume, DateTime date)
+        public Point(int index, float close, int volume, DateTime date)
         {
             Index = index;
             Close = close;

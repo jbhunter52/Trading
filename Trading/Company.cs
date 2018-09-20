@@ -30,10 +30,12 @@ namespace Trading
         public List<int> MovingAverageVolume { get; set; }
         public List<float> RelativePriceVolume  { get; set; }
         public List<float> MovingRelativePriceVolume  { get; set; }
-
-
-
-        public Company(string symbol, List<HistoricalDataResponse> data)
+        public float MinClose { get; set; }
+        public float MinVolume { get; set; }
+        public float maxDayChangePerc { get; set; }
+        public List<CupHandle> FullCupHandles { get; set; }
+        public CupHandle CurrentCupHandles { get; set; }
+        public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
         {
             date = new List<string>();
             open = new List<float>();
@@ -51,9 +53,14 @@ namespace Trading
             MovingAverageVolume = new List<int>();
             RelativePriceVolume = new List<float>();
             MovingRelativePriceVolume = new List<float>();
+            FullCupHandles = new List<CupHandle>();
+            CurrentCupHandles = new CupHandle();
 
             this.Symbol = symbol;
-            this.Name = "";
+            if (sym != null)
+                Name = sym.name;
+            else
+                Name = "";
 
             foreach (HistoricalDataResponse d in data)
             {
@@ -76,6 +83,18 @@ namespace Trading
                 Count++;
             }
 
+            MinClose = close.Min();
+            MinVolume = close.Max();
+
+            List<float> changeSpread = new List<float>();
+            for (int i = 0; i < close.Count;i++ )
+            {
+                float delta = high[i] - low[i];
+                changeSpread.Add(delta / open[i]);
+            }
+            maxDayChangePerc = changeSpread.Max();
+
+
             //Maybe it would be faster to reverse???
             //this.Data.OrderBy(x => DateTime.Parse(x.date));
 
@@ -90,9 +109,23 @@ namespace Trading
             }
             MovingRelativePriceVolume = MathHelpers.MovingAverage(RelativePriceVolume, 50);           
         }
+
         public Company()
         {
             Id = -1;
+        }
+        public bool FindIndexByDate(DateTime dt, out int ind)
+        {
+            for (int i = 0; i < date.Count; i++)
+            {
+                if (date[i].Equals(MathHelpers.DateToString(dt)))
+                {
+                    ind = i;
+                    return true;
+                }
+            }
+            ind = -1;
+            return false;
         }
 
         public bool AllPriceAboveValue(float val)
@@ -120,6 +153,39 @@ namespace Trading
                 return true;
             else
                 return false;
+        }
+
+        public bool IsHighToDate(int i)
+        {
+            List<float> val = close.GetRange(0, i + 1);
+
+            float today = close[i];
+            if (today == val.Max())
+                return true;
+            else
+                return false;
+        }
+        public Point GetPoint(int ind, DateTime thisDay)
+        {
+            return new Point(ind, close[ind], volume[ind], thisDay);
+        }
+        public bool EnsurePointJ(Point C)
+        {
+            bool under = true;
+            for (int i = CurrentCupHandles.A.Index+1; i < C.Index; i++)
+            {
+                float Pj = this.close[i];
+                float Pa = CurrentCupHandles.A.Close;
+                float Pc = C.Close;
+
+                float left = (float)(i - CurrentCupHandles.A.Index) / (C.Index - CurrentCupHandles.A.Index);
+                float val = left * (Pc - Pa);
+                if (Pj < val)
+                    under = true;
+                else
+                    under = false;
+            }
+            return under;
         }
     }
 }
