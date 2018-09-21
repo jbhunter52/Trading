@@ -71,5 +71,14 @@ namespace Trading
 
             return dt.Year + "-" + monthStr + "-" + dayStr;
         }
+        public static DateTime StringToDate(string date)
+        {
+            //Need To Test
+            string[] v = date.Split('-');
+            int year = Int16.Parse(v[0]);
+            int month = Int16.Parse(v[1]);
+            int day = Int16.Parse(v[2]);
+            return new DateTime(year, month, day);
+        }
     }
 }

@@ -178,9 +178,14 @@ namespace Trading
                 float Pa = CurrentCupHandles.A.Close;
                 float Pc = C.Close;
 
-                float left = (float)(i - CurrentCupHandles.A.Index) / (C.Index - CurrentCupHandles.A.Index);
-                float val = left * (Pc - Pa);
-                if (Pj < val)
+                int span = i - CurrentCupHandles.A.Index;
+                float rise = Pc - Pa;
+                int run = C.Index - CurrentCupHandles.A.Index;
+                float slope = rise / run; //should be negative
+
+                float lineVal = CurrentCupHandles.A.Close + slope * span;
+
+                if (Pj < lineVal)
                     under = true;
                 else
                     under = false;

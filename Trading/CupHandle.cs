@@ -14,6 +14,9 @@ namespace Trading
         public Point C;
         public Point D;
         public double Gamma;
+        public float R1;
+        public float R2;
+        public float R3;
 
         public CupHandle()
         {
@@ -23,11 +26,18 @@ namespace Trading
             C = new Point();
             D = new Point();
             Gamma = 0;
+            R1 = 0;
+            R2 = 0;
+            R3 = 0;
         }
 
         public void Search(Company c)
         {
             int ind = 0;
+        }
+        public float GetRank()
+        {
+            return R1 + R2 + R3;
         }
     }
 
@@ -38,9 +48,9 @@ namespace Trading
         public Range<int> CupRight; //B-C
         public Range<int> Handle; //C-D
         public Range<int> AC;
-        public Range<double> PivotRatio; //Pc/Pa
+        public Range<float> PivotRatio; //Pc/Pa
 
-        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<double> pivotRatio)
+        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio)
         {
             Setup = setup;
             CupLeft = cupLeft;
@@ -57,7 +67,7 @@ namespace Trading
                 CupLeft = new Range<int>(20, 120);
                 CupRight = new Range<int>(3, 25);
                 Handle = new Range<int>(2, 30);
-                PivotRatio = new Range<double>(0.78, 1.1);
+                PivotRatio = new Range<float>(0.78f, 1.1f);
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
             }
             if (ch == CupHandleDefinition.Haiku3)
@@ -66,10 +76,9 @@ namespace Trading
                 CupLeft = new Range<int>(20, 147);
                 CupRight = new Range<int>(3, 25);
                 Handle = new Range<int>(2, 30);
-                PivotRatio = new Range<double>(0.78, 1.1);
+                PivotRatio = new Range<float>(0.78f, 1.1f);
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
             }
-
         }
     }
 
