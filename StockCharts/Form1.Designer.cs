@@ -28,19 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.comboBoxDuration = new System.Windows.Forms.ComboBox();
             this.buttonGo = new System.Windows.Forms.Button();
             this.textBoxSymbols = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.chartValue = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartVolume = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.comboBoxDuration = new System.Windows.Forms.ComboBox();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.treeView = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -51,6 +51,10 @@
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chartValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -69,9 +73,17 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(590, 523);
-            this.splitContainer1.SplitterDistance = 92;
+            this.splitContainer1.Size = new System.Drawing.Size(729, 726);
+            this.splitContainer1.SplitterDistance = 127;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // comboBoxDuration
+            // 
+            this.comboBoxDuration.FormattingEnabled = true;
+            this.comboBoxDuration.Location = new System.Drawing.Point(452, 13);
+            this.comboBoxDuration.Name = "comboBoxDuration";
+            this.comboBoxDuration.Size = new System.Drawing.Size(106, 21);
+            this.comboBoxDuration.TabIndex = 4;
             // 
             // buttonGo
             // 
@@ -105,58 +117,70 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.chartVolume);
-            this.splitContainer2.Size = new System.Drawing.Size(590, 427);
-            this.splitContainer2.SplitterDistance = 305;
+            this.splitContainer2.Size = new System.Drawing.Size(729, 595);
+            this.splitContainer2.SplitterDistance = 425;
             this.splitContainer2.TabIndex = 0;
             // 
             // chartValue
             // 
-            chartArea3.Name = "ChartArea1";
-            this.chartValue.ChartAreas.Add(chartArea3);
             this.chartValue.Dock = System.Windows.Forms.DockStyle.Fill;
             legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend3.Name = "Legend1";
             this.chartValue.Legends.Add(legend3);
             this.chartValue.Location = new System.Drawing.Point(0, 0);
             this.chartValue.Name = "chartValue";
-            series3.ChartArea = "ChartArea1";
             series3.Legend = "Legend1";
             series3.Name = "Series1";
             this.chartValue.Series.Add(series3);
-            this.chartValue.Size = new System.Drawing.Size(590, 305);
+            this.chartValue.Size = new System.Drawing.Size(729, 425);
             this.chartValue.TabIndex = 0;
             // 
             // chartVolume
             // 
-            chartArea4.Name = "ChartArea1";
-            this.chartVolume.ChartAreas.Add(chartArea4);
             this.chartVolume.Dock = System.Windows.Forms.DockStyle.Fill;
             legend4.Enabled = false;
             legend4.Name = "Legend1";
             this.chartVolume.Legends.Add(legend4);
             this.chartVolume.Location = new System.Drawing.Point(0, 0);
             this.chartVolume.Name = "chartVolume";
-            series4.ChartArea = "ChartArea1";
             series4.Legend = "Legend1";
             series4.Name = "Series1";
             this.chartVolume.Series.Add(series4);
-            this.chartVolume.Size = new System.Drawing.Size(590, 118);
+            this.chartVolume.Size = new System.Drawing.Size(729, 166);
             this.chartVolume.TabIndex = 1;
             // 
-            // comboBoxDuration
+            // splitContainer3
             // 
-            this.comboBoxDuration.FormattingEnabled = true;
-            this.comboBoxDuration.Location = new System.Drawing.Point(452, 13);
-            this.comboBoxDuration.Name = "comboBoxDuration";
-            this.comboBoxDuration.Size = new System.Drawing.Size(106, 21);
-            this.comboBoxDuration.TabIndex = 4;
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.treeView);
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.splitContainer1);
+            this.splitContainer3.Size = new System.Drawing.Size(894, 726);
+            this.splitContainer3.SplitterDistance = 161;
+            this.splitContainer3.TabIndex = 1;
+            // 
+            // treeView
+            // 
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.Location = new System.Drawing.Point(0, 0);
+            this.treeView.Name = "treeView";
+            this.treeView.Size = new System.Drawing.Size(161, 726);
+            this.treeView.TabIndex = 0;
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(590, 523);
-            this.Controls.Add(this.splitContainer1);
+            this.ClientSize = new System.Drawing.Size(894, 726);
+            this.Controls.Add(this.splitContainer3);
             this.Name = "Form1";
             this.Text = "StockCharts";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -170,6 +194,10 @@
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chartValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartVolume)).EndInit();
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -183,6 +211,8 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chartValue;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartVolume;
         private System.Windows.Forms.ComboBox comboBoxDuration;
+        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.TreeView treeView;
     }
 }
 

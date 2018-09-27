@@ -23,7 +23,21 @@ namespace Trading
                     File.Delete(filename);
             }
             DB = new LiteDatabase(@filename);
-
+            //DB.Mapper.RegisterType<Point>
+            //(
+            //    serialize: (Point) => Point.Serialize(),
+            //    deserialize: (bson) => new Point(bson.AsString)
+            //);
+            //DB.Mapper.RegisterType<CupHandle>
+            //(
+            //    serialize: (CupHandle) => CupHandle.Serialize(),
+            //    deserialize: (bson) => new CupHandle(bson.AsBinary)
+            //);
+            //DB.Mapper.RegisterType<CupHandleParameters>
+            //(
+            //    serialize: (CupHandleParameters) => CupHandleParameters.Serialize(),
+            //    deserialize: (bson) => new CupHandleParameters(bson.AsString)
+            //);
         }
         public void AddSymbol(Company c)
         {

@@ -3,21 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZeroFormatter;
+using LiteDB;
 
 namespace Trading
 {
+    [ZeroFormattable]
     public class CupHandle
     {
-        public Point K;
-        public Point A;
-        public Point B;
-        public Point C;
-        public Point D;
-        public double Gamma;
-        public float R1;
-        public float R2;
-        public float R3;
+        [BsonId]
+        public int Id { get; set; }
+        public string Symbol { get; set; }
+        [Index(0)]
+        public virtual Point K { get; set; }
+        [Index(1)]
+        public virtual Point A { get; set; }
+        [Index(2)]
+        public virtual Point B { get; set; }
+        [Index(3)]
+        public virtual Point C { get; set; }
+        [Index(4)]
+        public virtual Point D { get; set; }
+        [Index(5)]
+        public virtual double Gamma { get; set; }
+        [Index(6)]
+        public virtual float R1 { get; set; }
+        [Index(7)]
+        public virtual float R2 { get; set; }
+        [Index(8)]
+        public virtual float R3 { get; set; }
 
+        
         public CupHandle()
         {
             K = new Point();
@@ -31,9 +47,39 @@ namespace Trading
             R3 = 0;
         }
 
-        public void Search(Company c)
+        public string Serialize()
         {
-            int ind = 0;
+            byte[] bytes = ZeroFormatterSerializer.Serialize(this);
+            return Encoding.UTF8.GetString(bytes);
+        }
+        public CupHandle(byte[] bytes)
+        {
+            if (bytes == null)
+            {
+                K = new Point();
+                A = new Point();
+                B = new Point();
+                C = new Point();
+                D = new Point();
+                Gamma = 0;
+                R1 = 0;
+                R2 = 0;
+                R3 = 0;
+            }
+            else
+            {
+                //byte[] bytes = Encoding.UTF8.GetBytes(data);
+                CupHandle ch = ZeroFormatterSerializer.Deserialize<CupHandle>(bytes);
+                K = ch.K;
+                A = ch.A;
+                B = ch.B;
+                C = ch.C;
+                D = ch.D;
+                Gamma = ch.Gamma;
+                R1 = ch.R1;
+                R2 = ch.R2;
+                R3 = ch.R3;
+            }
         }
         public float GetRank()
         {
@@ -41,14 +87,21 @@ namespace Trading
         }
     }
 
+    [ZeroFormattable]
     public class CupHandleParameters
     {
-        public Range<int> Setup; //K-A
-        public Range<int> CupLeft; //A-B
-        public Range<int> CupRight; //B-C
-        public Range<int> Handle; //C-D
-        public Range<int> AC;
-        public Range<float> PivotRatio; //Pc/Pa
+        [Index(0)]
+        public virtual Range<int> Setup { get; set; } //K-A
+        [Index(1)]
+        public virtual Range<int> CupLeft { get; set; } //A-B
+        [Index(2)]
+        public virtual Range<int> CupRight { get; set; } //B-C
+        [Index(3)]
+        public virtual Range<int> Handle { get; set; } //C-D
+        [Index(4)]
+        public virtual Range<int> AC { get; set; }
+        [Index(5)]
+        public virtual Range<float> PivotRatio { get; set; } //Pc/Pa
 
         public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio)
         {
@@ -57,6 +110,22 @@ namespace Trading
             CupRight = cupRight;
             Handle = handle;
             AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
+        }
+        public string Serialize()
+        {
+            byte[] bytes = ZeroFormatterSerializer.Serialize(this);
+            return Encoding.UTF8.GetString(bytes);
+        }
+        public CupHandleParameters(string data)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(data);
+            CupHandleParameters chp = ZeroFormatterSerializer.Deserialize<CupHandleParameters>(bytes);
+            Setup = chp.Setup;
+            CupLeft = chp.CupLeft;
+            CupRight = chp.CupRight;
+            Handle = chp.Handle;
+            AC = chp.AC;
+            PivotRatio = chp.PivotRatio;
         }
 
         public CupHandleParameters(CupHandleDefinition ch)
@@ -88,12 +157,17 @@ namespace Trading
         Haiku3
     };
 
+    [ZeroFormattable]
     public class Point
     {
-        public float Close;
-        public int Volume;
-        public DateTime Date;
-        public int Index;
+        [Index(0)]
+        public virtual float Close { get; set; }
+        [Index(1)]
+        public virtual int Volume { get; set; }
+        [Index(2)]
+        public virtual DateTime Date { get; set; }
+        [Index(3)]
+        public virtual int Index { get; set; }
 
 
         public Point(int index, float close, int volume, DateTime date)
@@ -106,6 +180,20 @@ namespace Trading
         public Point()
         {
             Index = -1;
+        }
+        public string Serialize()
+        {
+            byte[] bytes = ZeroFormatterSerializer.Serialize(this);
+            return Encoding.UTF8.GetString(bytes);
+        }
+        public Point(string data)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(data);
+            Point p = ZeroFormatterSerializer.Deserialize<Point>(bytes);
+            Close = p.Close;
+            Volume = p.Volume;
+            Date = p.Date;
+            Index = p.Index;
         }
     }
 

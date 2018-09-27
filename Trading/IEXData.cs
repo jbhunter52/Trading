@@ -45,20 +45,18 @@ namespace Trading
                                     //Console.WriteLine("Change Percentage: " + historicalData.changePercent);
                                     data.Add(historicalData);
                                 }
-                                else
-                                { return new Company(); }
+                                else { return new Company(); }
                             }
                         }
-                        else
-                        { return new Company(); }
+                        else { return new Company(); }
                     }
+                    else { return new Company(); }
                 }
                 catch (Exception ex)
                 {
                     Debug.Nlog(symbol + "\n" + ex.Message);
                 }
             }
-
             return new Company(symbol, data, symbolData);
         }
         //public static List<Company> DownloadSymbols(List<string> symbols, HistoryType ht)

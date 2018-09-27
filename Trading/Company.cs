@@ -13,7 +13,7 @@ namespace Trading
         public string Symbol {get;set;}
         //public List<HistoricalDataResponse> Data { get; set; }
 
-        public int Count = 0;
+        public int Count { get; set; }
         public List<string> date { get; set; }
         public List<float> open { get; set; }
         public List<float> high { get; set; }
@@ -33,10 +33,11 @@ namespace Trading
         public float MinClose { get; set; }
         public float MinVolume { get; set; }
         public float maxDayChangePerc { get; set; }
-        public List<CupHandle> FullCupHandles { get; set; }
-        public CupHandle CurrentCupHandles { get; set; }
+        //public List<CupHandle> FullCupHandles { get; set; }
+        public CupHandle CurrentCupHandle { get; set; }
         public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
         {
+            Count = 0;
             date = new List<string>();
             open = new List<float>();
             high = new List<float>();
@@ -53,8 +54,8 @@ namespace Trading
             MovingAverageVolume = new List<int>();
             RelativePriceVolume = new List<float>();
             MovingRelativePriceVolume = new List<float>();
-            FullCupHandles = new List<CupHandle>();
-            CurrentCupHandles = new CupHandle();
+            //FullCupHandles = new List<CupHandle>();
+            CurrentCupHandle = new CupHandle();
 
             this.Symbol = symbol;
             if (sym != null)
@@ -169,21 +170,21 @@ namespace Trading
         {
             return new Point(ind, close[ind], volume[ind], thisDay);
         }
-        public bool EnsurePointJ(Point C)
+        public bool EnsurePointJ(Point C, CupHandle ch)
         {
             bool under = true;
-            for (int i = CurrentCupHandles.A.Index+1; i < C.Index; i++)
+            for (int i = ch.A.Index+1; i < C.Index; i++)
             {
                 float Pj = this.close[i];
-                float Pa = CurrentCupHandles.A.Close;
+                float Pa = ch.A.Close;
                 float Pc = C.Close;
 
-                int span = i - CurrentCupHandles.A.Index;
+                int span = i - ch.A.Index;
                 float rise = Pc - Pa;
-                int run = C.Index - CurrentCupHandles.A.Index;
+                int run = C.Index - ch.A.Index;
                 float slope = rise / run; //should be negative
 
-                float lineVal = CurrentCupHandles.A.Close + slope * span;
+                float lineVal = ch.A.Close + slope * span;
 
                 if (Pj < lineVal)
                     under = true;
