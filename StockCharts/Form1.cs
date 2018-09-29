@@ -34,14 +34,22 @@ namespace StockCharts
             area.AxisX.LabelStyle.Format = "MM/dd/yyyy";
             area.AxisX.LabelStyle.Angle = -90;
             area.AxisX.IntervalType = DateTimeIntervalType.Days;
+            area.AxisX.ScaleView.Zoomable = true;
+            area.AxisY.ScaleView.Zoomable = true;
+            area.AxisY.LabelStyle.Format = "{0:0.00}";
             chartValue.ChartAreas.Add(area);
+
 
             chartVolume.ChartAreas.Clear();
             area = new ChartArea("0");
             area.AxisX.LabelStyle.Format = "MM/dd/yyyy";
             area.AxisX.LabelStyle.Angle = -90;
             area.AxisX.IntervalType = DateTimeIntervalType.Months;
+            area.AxisX.ScaleView.Zoomable = true;
+            area.AxisY.ScaleView.Zoomable = true;
             chartVolume.ChartAreas.Add(area);
+
+            chartValue.MouseWheel += chart1_MouseWheel;
 
             string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-19-18.db";
             string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
@@ -57,7 +65,7 @@ namespace StockCharts
             colch = chdb.GetCollection<CupHandle>("CupHandle");
 
             int num = colch.Count();
-            for (int i = 1; i < num; i++)
+            for (int i = 1; i < 50; i++)
             {
                 Company c = col.FindById(i);
                 cList.Add(c);
@@ -174,6 +182,8 @@ namespace StockCharts
             }
 
             chartValue.Show();
+            chartValue.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+            chartValue.ChartAreas[0].AxisY.ScaleView.ZoomReset();
         }
 
         private void DrawVolumeChart(Trading.Company c)
@@ -207,6 +217,8 @@ namespace StockCharts
                 maVol.Points.AddXY(date, val);
             }
             chartVolume.Series.Add(maVol);
+            chartVolume.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+            chartVolume.ChartAreas[0].AxisY.ScaleView.ZoomReset();
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -270,10 +282,13 @@ namespace StockCharts
             s.ChartArea = "0";
             s.XValueType = ChartValueType.DateTime;
             s.BorderWidth = 3;
+            s.MarkerStyle = MarkerStyle.Circle;
+            s.MarkerSize = 20;
             s.Points.AddXY(DateTime.Parse(c.label[ch.A.Index]), ch.A.Close);
             s.Points.AddXY(DateTime.Parse(c.label[ch.B.Index]), ch.B.Close);
             s.Points.AddXY(DateTime.Parse(c.label[ch.C.Index]), ch.C.Close);
             s.Points.AddXY(DateTime.Parse(c.label[ch.D.Index]), ch.D.Close);
+            s.Points.AddXY(DateTime.Parse(c.label[ch.Buy.Index]), ch.Buy.Close);
             return s;
         }
         private void RemoveAllCupHandleSeries()
@@ -284,6 +299,126 @@ namespace StockCharts
                 chartValue.Series.Remove(s);
             }
         }
+        private void chart1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var chart = (Chart)sender;
+            var xAxis = chart.ChartAreas[0].AxisX;
+            var yAxis = chart.ChartAreas[0].AxisY;
+
+            var xAxisVol = chartVolume.ChartAreas[0].AxisX;
+            var yAxisVol = chartVolume.ChartAreas[0].AxisY;
+
+            try
+            {
+                double mult = 0;
+                if (e.Delta < 0) // Scrolled down.
+                {
+                    //xAxis.ScaleView.ZoomReset();
+                    //yAxis.ScaleView.ZoomReset();
+                    mult = 1/1.25;
+                }
+                else if (e.Delta > 0) // Scrolled up.
+                {
+                    mult = 1.25;
+                }
+
+                if (Math.Abs(e.Delta) > 0)
+                {
+                    var xMin = xAxis.ScaleView.ViewMinimum;
+                    var xMax = xAxis.ScaleView.ViewMaximum;
+                    var yMin = yAxis.ScaleView.ViewMinimum;
+                    var yMax = yAxis.ScaleView.ViewMaximum;
+
+                    var xSpan = (xMax - xMin) / mult;
+                    var ySpan = (yMax - yMin) / mult;
+
+                    var xPos = xAxis.PixelPositionToValue(e.Location.X);
+                    var yPos = yAxis.PixelPositionToValue(e.Location.Y);
+
+                    var u = (xPos - xMin) / (xMax - xMin);
+                    var v = (yPos - yMin) / (yMax - yMin);
+
+                    var posXStart = xPos - u * xSpan;
+                    var posXFinish = xPos + (1-u) * xSpan;
+                    var posYStart = yPos - v * ySpan;
+                    var posYFinish = yPos + (1-v) * ySpan;
+
+                    if (ModifierKeys.HasFlag(Keys.Control))
+                    {
+                        yAxis.ScaleView.Zoom(posYStart, posYFinish);
+                    }
+                    else if (ModifierKeys.HasFlag(Keys.Shift))
+                    {
+                        xAxis.ScaleView.Zoom(posXStart, posXFinish);
+                        xAxisVol.ScaleView.Zoom(posXStart, posXFinish);
+                    }
+                    else
+                    {
+                        xAxis.ScaleView.Zoom(posXStart, posXFinish);
+                        yAxis.ScaleView.Zoom(posYStart, posYFinish);
+                        xAxisVol.ScaleView.Zoom(posXStart, posXFinish);
+                    }
+                }
+                //chartVolume.ChartAreas[0].AxisY.Minimum = 0;
+                //chartVolume.ChartAreas[0].AxisY.Minimum = Double.NaN;
+                //chartVolume.ChartAreas[0].RecalculateAxesScale();
+
+            }
+            catch { }
+        }
+
+        private double prevMouseX = 0;
+        private double prevMouseY = 0;
+
+        private void chartValue_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (rightMouseDown)
+            {
+                var xAxis = chartValue.ChartAreas[0].AxisX;
+                var yAxis = chartValue.ChartAreas[0].AxisY;
+
+                var xAxisVol = chartVolume.ChartAreas[0].AxisX;
+                var yAxisVol = chartVolume.ChartAreas[0].AxisY;
+
+                double xPos = xAxis.PixelPositionToValue(e.Location.X);
+                double yPos = yAxis.PixelPositionToValue(e.Location.Y);
+                double xPosPrev = xAxis.PixelPositionToValue(prevMouseX);
+                double yPosPrev = yAxis.PixelPositionToValue(prevMouseY);
+
+                double xDiff = xPos - xPosPrev;
+                double yDiff = yPos - yPosPrev;
+
+                xAxis.ScaleView.Zoom(xAxis.ScaleView.ViewMinimum + xDiff, xAxis.ScaleView.ViewMaximum + xDiff);
+                yAxis.ScaleView.Zoom(yAxis.ScaleView.ViewMinimum - yDiff, yAxis.ScaleView.ViewMaximum - yDiff);
+
+                xAxisVol.ScaleView.Zoom(xAxis.ScaleView.ViewMinimum + xDiff, xAxis.ScaleView.ViewMaximum + xDiff);
+
+                //chartVolume.ChartAreas[0].AxisY.Minimum = 0;
+                //chartVolume.ChartAreas[0].AxisY.Minimum = Double.NaN;
+                //chartVolume.ChartAreas[0].RecalculateAxesScale();
+
+                prevMouseX = e.Location.X;
+                prevMouseY = e.Location.Y;
+            }
+        }
+
+        bool rightMouseDown = false;
+        private void chartValue_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            { 
+                rightMouseDown = true;
+                prevMouseX = e.Location.X;
+                prevMouseY = e.Location.Y;
+            }
+        }
+
+        private void chartValue_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                rightMouseDown = false;
+        }
+
 
 
 

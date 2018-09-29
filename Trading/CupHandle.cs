@@ -25,12 +25,16 @@ namespace Trading
         [Index(4)]
         public virtual Point D { get; set; }
         [Index(5)]
-        public virtual double Gamma { get; set; }
+        public virtual Point Buy { get; set; }
         [Index(6)]
-        public virtual float R1 { get; set; }
+        public virtual bool BuyTrigger { get; set; }
         [Index(7)]
-        public virtual float R2 { get; set; }
+        public virtual double Gamma { get; set; }
         [Index(8)]
+        public virtual float R1 { get; set; }
+        [Index(9)]
+        public virtual float R2 { get; set; }
+        [Index(10)]
         public virtual float R3 { get; set; }
 
         
@@ -41,10 +45,43 @@ namespace Trading
             B = new Point();
             C = new Point();
             D = new Point();
+            Buy = new Point();
+            BuyTrigger = false;
             Gamma = 0;
             R1 = 0;
             R2 = 0;
             R3 = 0;
+        }
+
+        public void SetC(Point c)
+        {
+            C = c;
+            D = new Point();
+            Buy = new Point();
+            BuyTrigger = false;
+            R1 = 0;
+            R2 = 0;
+            R3 = 0;
+        }
+        public void SetA(Point a)
+        {
+            A = a;
+            B = new Point();
+            C = new Point();
+            D = new Point();
+            K = new Point();
+            Buy = new Point();
+            BuyTrigger = false;
+            R1 = 0;
+            R2 = 0;
+            R3 = 0;
+        }
+        public void SetB(Point b)
+        {
+            B = b;
+            D = new Point();
+            Buy = new Point();
+            BuyTrigger = false;
         }
 
         public string Serialize()
@@ -61,6 +98,8 @@ namespace Trading
                 B = new Point();
                 C = new Point();
                 D = new Point();
+                Buy = new Point();
+                BuyTrigger = false;
                 Gamma = 0;
                 R1 = 0;
                 R2 = 0;
@@ -102,14 +141,18 @@ namespace Trading
         public virtual Range<int> AC { get; set; }
         [Index(5)]
         public virtual Range<float> PivotRatio { get; set; } //Pc/Pa
+        public float BuyWait { get; set; }
+        public float MinRank;
 
-        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio)
+        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio, float minRank)
         {
             Setup = setup;
             CupLeft = cupLeft;
             CupRight = cupRight;
             Handle = handle;
             AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
+            BuyWait = 0.5f;
+            MinRank = minRank;
         }
         public string Serialize()
         {
@@ -126,6 +169,7 @@ namespace Trading
             Handle = chp.Handle;
             AC = chp.AC;
             PivotRatio = chp.PivotRatio;
+            BuyWait = chp.BuyWait;
         }
 
         public CupHandleParameters(CupHandleDefinition ch)
@@ -138,6 +182,8 @@ namespace Trading
                 Handle = new Range<int>(2, 30);
                 PivotRatio = new Range<float>(0.78f, 1.1f);
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
+                BuyWait = 0.5f;
+                MinRank = 8;
             }
             if (ch == CupHandleDefinition.Haiku3)
             {
@@ -147,6 +193,7 @@ namespace Trading
                 Handle = new Range<int>(2, 30);
                 PivotRatio = new Range<float>(0.78f, 1.1f);
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
+                MinRank = 8;
             }
         }
     }

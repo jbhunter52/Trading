@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asset.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="CupHandle.cs" />
     <Compile Include="Database.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="HistoricalDataResponse.cs" />
     <Compile Include="IEXData.cs" />
     <Compile Include="MathHelpers.cs" />
+    <Compile Include="Portfolio.cs" />
     <Compile Include="SymbolData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -89,7 +91,7 @@
   <ItemGroup>
     <Content Include="Nlog.config">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
