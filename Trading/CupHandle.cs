@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZeroFormatter;
 using LiteDB;
+using NodaTime;
 
 namespace Trading
 {
@@ -212,12 +213,12 @@ namespace Trading
         [Index(1)]
         public virtual int Volume { get; set; }
         [Index(2)]
-        public virtual DateTime Date { get; set; }
+        public virtual LocalDate Date { get; set; }
         [Index(3)]
         public virtual int Index { get; set; }
 
 
-        public Point(int index, float close, int volume, DateTime date)
+        public Point(int index, float close, int volume, LocalDate date)
         {
             Index = index;
             Close = close;

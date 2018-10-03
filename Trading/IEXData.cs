@@ -14,13 +14,45 @@ namespace Trading
         public static Company DownloadSymbol(string symbol, HistoryType ht, SymbolData symbolData = null)
         {
             List<HistoricalDataResponse> data = new List<HistoricalDataResponse>();
+            EarningsData earnings = new EarningsData();
 
-
+            #region GetEarningsData
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
-                    string IEXTrading_API_PATH = GetURL(symbol, ht);
+                    string IEXTrading_API_PATH = GetEarningsDataURL(symbol);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //For IP-API
+                    client.BaseAddress = new Uri(IEXTrading_API_PATH);
+                    HttpResponseMessage response = client.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        earnings = response.Content.ReadAsAsync<EarningsData>().GetAwaiter().GetResult();
+                    }
+                    else { }
+                }
+                catch (Exception ex)
+                {
+                    return new Company();
+                    Debug.Nlog(symbol + "\n" + ex.Message);
+                }
+            }
+
+            if (earnings == null)
+            {
+                return new Company();
+            }
+            #endregion
+
+            #region GetHistoricalData
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string IEXTrading_API_PATH = GetHistoricalDataURL(symbol, ht);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -57,7 +89,11 @@ namespace Trading
                     Debug.Nlog(symbol + "\n" + ex.Message);
                 }
             }
-            return new Company(symbol, data, symbolData);
+            #endregion
+
+
+
+            return new Company(symbol, data, earnings, symbolData);
         }
         //public static List<Company> DownloadSymbols(List<string> symbols, HistoryType ht)
         //{
@@ -136,12 +172,12 @@ namespace Trading
 
         }
 
-        public static void ProcessSymbolResults(Database db, SymbolData sym, List<HistoricalDataResponse> data)
-        {
-            Company c = new Company(sym.symbol, data);
-            db.AddSymbol(c);
-        }
-        private static string GetURL(string symbol, HistoryType ht)
+        //public static void ProcessSymbolResults(Database db, SymbolData sym, List<HistoricalDataResponse> data)
+        //{
+        //    Company c = new Company(sym.symbol, data);
+        //    db.AddSymbol(c);
+        //}
+        private static string GetHistoricalDataURL(string symbol, HistoryType ht)
         {
             string years = "";
             if (ht == HistoryType.OneYear) { years = "1y"; }
@@ -150,6 +186,13 @@ namespace Trading
             var IEXTrading_API_PATH = "https://api.iextrading.com/1.0/stock/{0}/chart/{1}";
 
             IEXTrading_API_PATH = string.Format(IEXTrading_API_PATH, symbol, years);
+            return IEXTrading_API_PATH;
+        }
+        private static string GetEarningsDataURL(string symbol)
+        {
+            var IEXTrading_API_PATH = "https://api.iextrading.com/1.0/stock/{0}/earnings";
+
+            IEXTrading_API_PATH = string.Format(IEXTrading_API_PATH, symbol);
             return IEXTrading_API_PATH;
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodaTime;
 
 namespace Trading
 {
@@ -14,7 +15,7 @@ namespace Trading
         //public List<HistoricalDataResponse> Data { get; set; }
 
         public int Count { get; set; }
-        public List<string> date { get; set; }
+        public List<LocalDate> date { get; set; }
         public List<float> open { get; set; }
         public List<float> high { get; set; }
         public List<float> low  { get; set; }
@@ -35,10 +36,12 @@ namespace Trading
         public float maxDayChangePerc { get; set; }
         //public List<CupHandle> FullCupHandles { get; set; }
         public CupHandle CurrentCupHandle { get; set; }
-        public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
+        public EarningsData Earnings { get; set; }
+
+        public Company(string symbol, List<HistoricalDataResponse> data, EarningsData earnings, SymbolData sym = null)
         {
             Count = 0;
-            date = new List<string>();
+            date = new List<LocalDate>();
             open = new List<float>();
             high = new List<float>();
             low = new List<float>();
@@ -56,6 +59,7 @@ namespace Trading
             MovingRelativePriceVolume = new List<float>();
             //FullCupHandles = new List<CupHandle>();
             CurrentCupHandle = new CupHandle();
+            Earnings = new EarningsData();
 
             this.Symbol = symbol;
             if (sym != null)
@@ -65,7 +69,9 @@ namespace Trading
 
             foreach (HistoricalDataResponse d in data)
             {
-                date.Add(d.date);
+                string[] dateSplit = d.date.Split('-');
+                LocalDate localDate = new LocalDate(Int16.Parse(dateSplit[0]),Int16.Parse(dateSplit[1]), Int16.Parse(dateSplit[2]));
+                date.Add(localDate);
                 open.Add(d.open);
                 high.Add(d.high);
                 low.Add(d.low);
@@ -108,18 +114,21 @@ namespace Trading
                 float y = (close[i] - close[i-1])/close[i-1];
                 RelativePriceVolume.Add(volume[i] * y);
             }
-            MovingRelativePriceVolume = MathHelpers.MovingAverage(RelativePriceVolume, 50);           
+            MovingRelativePriceVolume = MathHelpers.MovingAverage(RelativePriceVolume, 50);
+          
+            //EarningsData
+            Earnings = earnings;
         }
 
         public Company()
         {
             Id = -1;
         }
-        public bool FindIndexByDate(DateTime dt, out int ind)
+        public bool FindIndexByDate(LocalDate dt, out int ind)
         {
             for (int i = 0; i < date.Count; i++)
             {
-                if (date[i].Equals(MathHelpers.DateToString(dt)))
+                if (date[i].Equals(dt))
                 {
                     ind = i;
                     return true;
@@ -166,9 +175,9 @@ namespace Trading
             else
                 return false;
         }
-        public Point GetPoint(int ind, DateTime thisDay)
+        public Point GetPoint(int ind)
         {
-            return new Point(ind, close[ind], volume[ind], thisDay);
+            return new Point(ind, close[ind], volume[ind], date[ind]);
         }
         public bool EnsurePointJ(Point C, CupHandle ch)
         {

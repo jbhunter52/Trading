@@ -23,6 +23,8 @@ namespace Trading
                     File.Delete(filename);
             }
             DB = new LiteDatabase(@filename);
+
+            DB.Mapper.RegisterType<NodaTime.LocalDate>(value => new BsonValue(LocalDateToInt(value)), bson => LocalDateFromString(bson));
             //DB.Mapper.RegisterType<Point>
             //(
             //    serialize: (Point) => Point.Serialize(),
@@ -131,6 +133,22 @@ namespace Trading
             TimeSpan ts = new TimeSpan(0, 0, (int)(avgSec * left));
             Debug.Nlog(current.ToString() + "/" + total.ToString() + "\t" + symData.symbol + ", " + ts.ToString() + " left");
             
+        }
+
+        public string LocalDateToInt(NodaTime.LocalDate ld)
+        {
+            string year = ld.Year.ToString("D4");
+            string month = ld.Month.ToString("D2");
+            string day = ld.Day.ToString("D2");
+            return year + month + day;
+        }
+        public NodaTime.LocalDate LocalDateFromString(string s)
+        {
+            //string s = val.ToString();
+            int year = Int16.Parse(s.Substring(0,4));
+            int month = Int16.Parse(s.Substring(4,2));
+            int day = Int16.Parse(s.Substring(6,2));
+            return new NodaTime.LocalDate(year, month, day);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.IO;
 using Trading;
 using LiteDB;
 using System.Diagnostics;
+using NodaTime;
 
 namespace Test
 {
@@ -14,22 +15,25 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            bool overwrite = false;
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-19-18.db";
+            bool overwrite = true;
+            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-28-18.db";
             string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
             Trading.Database db = new Trading.Database(dbfile, overwrite);
 
+
+            int num = 200;
+
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            //IEXData.DownloadSymbol("FTF^#", IEXData.HistoryType.FiveYear);
-            //db.GetAllData2(Trading.IEXData.HistoryType.FiveYear, -1);
+            IEXData.DownloadSymbol("FTF^#", IEXData.HistoryType.FiveYear);
+            db.GetAllData2(Trading.IEXData.HistoryType.FiveYear, num);
             Trading.Debug.Nlog("Get all " + ((float)sw.ElapsedMilliseconds / 1000).ToString() + " seconds");
             
             sw.Restart();
             List<Company> list = new List<Company>();
             var col = db.DB.GetCollection<Trading.Company>("data");
-            int num = 5000;
-            for (int i = 1; i < num; i++ )
+            for (int i = 1; i < col.Count(); i++ )
             {
                 Company c = col.FindById(i);
                 c.CurrentCupHandle = new CupHandle();
@@ -40,10 +44,10 @@ namespace Test
             Trading.Debug.Nlog("Filter " + ((float)sw.ElapsedMilliseconds / 1000).ToString() + " seconds");
 
             CupHandleParameters chp = new CupHandleParameters(CupHandleDefinition.Haiku1);
-            
-            DateTime startDay = new DateTime(2013, 9, 19);
-            DateTime endDay = new DateTime(2018, 9, 27);
-            int runDays = endDay.Subtract(startDay).Days;
+
+            LocalDate startDay = new LocalDate(2013, 9, 19);
+            LocalDate endDay = new LocalDate(2018, 9, 27);
+            int runDays = Period.Between(startDay, endDay, PeriodUnits.Days).Days;
             List<CupHandle> cupHandles = new List<CupHandle>();
             List<string> chSymbols = new List<string>();
 
@@ -59,8 +63,8 @@ namespace Test
                 var colch = chDb.GetCollection<CupHandle>("CupHandle");
                 for (int i = 0; i < runDays; i++)
                 {
-                    DateTime thisDay = startDay.AddDays(i);
-                    string mess = thisDay.ToShortDateString() + ", " + portfolio.GetTotalValue().ToString() + ", Total Assets: " + portfolio.Assets.Count.ToString();
+                    LocalDate thisDay = startDay.PlusDays(i);
+                    string mess = thisDay.ToString() + ", " + portfolio.GetTotalValue().ToString() + ", Total Assets: " + portfolio.Assets.Count.ToString();
                     Trading.Debug.Nlog(mess);
                     Trading.Debug.Nlog(mess);
                     foreach (Company c in list)
@@ -86,8 +90,8 @@ namespace Test
                                         float close = c.close[j];
                                         if (close > c.CurrentCupHandle.C.Close)
                                         {
-                                            DateTime dDate = MathHelpers.StringToDate(c.date[j]);
-                                            c.CurrentCupHandle.Buy = c.GetPoint(j, dDate);
+                                            LocalDate dDate = c.date[j];
+                                            c.CurrentCupHandle.Buy = c.GetPoint(j);
                                             c.CurrentCupHandle.BuyTrigger = true;
                                             // Debug.Nlog(c.Symbol + " Rank " + c.CurrentCupHandles.GetRank().ToString());
                                             c.CurrentCupHandle.Symbol = c.Symbol;
@@ -99,6 +103,7 @@ namespace Test
                                             //Buy Triggered
                                             if (portfolio.Cash > 1000)
                                             {
+                                                Trading.Debug.Nlog("Bought " + c.Symbol);
                                                 portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, 1000.0f));
                                             }
 
@@ -116,7 +121,7 @@ namespace Test
                             {
                                 //Debug.Nlog(c.Symbol + ", New A found");
                                 c.CurrentCupHandle = new CupHandle(); //reset cuphandle
-                                c.CurrentCupHandle.SetA(c.GetPoint(thisDayInd, thisDay)); //Set new A
+                                c.CurrentCupHandle.SetA(c.GetPoint(thisDayInd)); //Set new A
                             }
                             else if (c.CurrentCupHandle.A != null)
                             {
@@ -124,7 +129,7 @@ namespace Test
 
                                 if (chp.AC.ContainsValue(lastA)) //Last A in correct Range, search for C
                                 {
-                                    Point possibleC = c.GetPoint(thisDayInd, thisDay);
+                                    Point possibleC = c.GetPoint(thisDayInd);
                                     if (chp.PivotRatio.ContainsValue(possibleC.Close / c.CurrentCupHandle.A.Close))
                                     {
                                         // Pc/Pa is now verified to be within the pivot ratio range
@@ -199,8 +204,8 @@ namespace Test
                                                 //Debug.Nlog("B found!!!");
                                                 c.CurrentCupHandle.R1 = R1arr[ind];
                                                 c.CurrentCupHandle.R3 = R3arr[ind];
-                                                DateTime bDate = MathHelpers.StringToDate(c.date[bestR1R3Index]);
-                                                c.CurrentCupHandle.SetB(c.GetPoint(bestR1R3Index, bDate));
+                                                LocalDate bDate = c.date[bestR1R3Index];
+                                                c.CurrentCupHandle.SetB(c.GetPoint(bestR1R3Index));
 
                                                 //Now continue and find PointD the handle
                                                 int rangeCD = chp.Handle.Maximum - chp.Handle.Minimum;
@@ -251,7 +256,7 @@ namespace Test
                                                 for (int cnt = 0; cnt < R2arr.Count;cnt++)
                                                 {
                                                     ind = startDsearch + cnt;
-                                                    DateTime dDate = MathHelpers.StringToDate(c.date[ind]);
+                                                    LocalDate dDate = c.date[ind];
                                                     float dClose = c.close[ind];
                                                     float CBdiff = c.CurrentCupHandle.C.Close - c.CurrentCupHandle.B.Close;
                                                     if (CBdiff > 0)
@@ -281,9 +286,9 @@ namespace Test
                                                         c.CurrentCupHandle.R2 = R2arr[ind];
                                                         if (c.CurrentCupHandle.GetRank() > chp.MinRank)
                                                         {
-                                                            DateTime dDate = MathHelpers.StringToDate(c.date[bestR2Index]);
+                                                            LocalDate dDate = c.date[bestR2Index];
 
-                                                            c.CurrentCupHandle.D = c.GetPoint(bestR2Index, dDate);
+                                                            c.CurrentCupHandle.D = c.GetPoint(bestR2Index);
                                                         }
 
 
