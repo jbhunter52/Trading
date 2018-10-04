@@ -14,37 +14,38 @@ namespace Trading
         public static Company DownloadSymbol(string symbol, HistoryType ht, SymbolData symbolData = null)
         {
             List<HistoricalDataResponse> data = new List<HistoricalDataResponse>();
-            EarningsData earnings = new EarningsData();
+            
 
             #region GetEarningsData
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    string IEXTrading_API_PATH = GetEarningsDataURL(symbol);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            //EarningsData earnings = new EarningsData();
+            //using (HttpClient client = new HttpClient())
+            //{
+            //    try
+            //    {
+            //        string IEXTrading_API_PATH = GetEarningsDataURL(symbol);
+            //        client.DefaultRequestHeaders.Accept.Clear();
+            //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                    //For IP-API
-                    client.BaseAddress = new Uri(IEXTrading_API_PATH);
-                    HttpResponseMessage response = client.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
-                    if (response.IsSuccessStatusCode)
-                    {
-                        earnings = response.Content.ReadAsAsync<EarningsData>().GetAwaiter().GetResult();
-                    }
-                    else { }
-                }
-                catch (Exception ex)
-                {
-                    return new Company();
-                    Debug.Nlog(symbol + "\n" + ex.Message);
-                }
-            }
+            //        //For IP-API
+            //        client.BaseAddress = new Uri(IEXTrading_API_PATH);
+            //        HttpResponseMessage response = client.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+            //        if (response.IsSuccessStatusCode)
+            //        {
+            //            earnings = response.Content.ReadAsAsync<EarningsData>().GetAwaiter().GetResult();
+            //        }
+            //        else { }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        return new Company();
+            //        Debug.Nlog(symbol + "\n" + ex.Message);
+            //    }
+            //}
 
-            if (earnings == null)
-            {
-                return new Company();
-            }
+            //if (earnings == null)
+            //{
+            //    return new Company();
+            //}
             #endregion
 
             #region GetHistoricalData
@@ -93,7 +94,7 @@ namespace Trading
 
 
 
-            return new Company(symbol, data, earnings, symbolData);
+            return new Company(symbol, data, symbolData);
         }
         //public static List<Company> DownloadSymbols(List<string> symbols, HistoryType ht)
         //{

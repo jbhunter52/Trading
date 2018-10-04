@@ -62,7 +62,7 @@ namespace Trading
             if (num > 0)
                 cnt = num;
 
-
+            current = 0;
             for (int i = 0; i < cnt; i++)
             {
                 Trading.SymbolData symData = symbols[i];
@@ -93,6 +93,23 @@ namespace Trading
             sw.Start();
             StartAndWaitAllThrottled(tasks,6, 20000000);
         }
+
+        public void GetYChartsEpsData(List<Company> cList)
+        {
+            List<Task> tasks = new List<Task>();
+            current = 0;
+
+            for (int i = 0; i < cList.Count; i++ )
+            {
+                Company c = cList[i];
+                var t = new Task(() => ProcessSymbolYChartEps(cList.Count, c));
+                tasks.Add(t);
+            }
+            sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            StartAndWaitAllThrottled(tasks, 1, 20000000);
+        }
+
         public static void StartAndWaitAllThrottled(IEnumerable<Task> tasksToRun, int maxActionsToRunInParallel, int timeoutInMilliseconds, CancellationToken cancellationToken = new CancellationToken())
         {
             // Convert to a list of tasks so that we don't enumerate over it multiple times needlessly.
@@ -120,7 +137,23 @@ namespace Trading
                 Task.WaitAll(postTaskTasks.ToArray(), cancellationToken);
             }
         }
+        public void ProcessSymbolYChartEps(int total, Company c)
+        {
+            Random r = new Random();
+            System.Threading.Thread.Sleep(500 + r.Next(1000));  //Sleep between 500-1500 ms
+            EpsData data = YChartsData.GetEpsData(c.Symbol);
+            c.EarningsQuarters = data.Quarters;
+            c.EarningsData = data.Eps;
 
+            var col = DB.GetCollection<Trading.Company>("data");
+            col.Update(c);
+
+            current++;
+            int left = total - current;
+            double avgSec = sw.Elapsed.TotalSeconds / current;
+            TimeSpan ts = new TimeSpan(0, 0, (int)(avgSec * left));
+            Debug.Nlog("YCharts Eps, " + current.ToString() + "/" + total.ToString() + "\t" + c.Symbol + ", " + ts.ToString() + " left");
+        }
         public void ProcessSymbol(int total, SymbolData symData, IEXData.HistoryType ht)
         {
             Trading.Company c = Trading.IEXData.DownloadSymbol(symData.symbol, ht, symData);

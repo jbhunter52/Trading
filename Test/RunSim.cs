@@ -15,22 +15,44 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            bool overwrite = true;
             string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-28-18.db";
-            string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
-            Trading.Database db = new Trading.Database(dbfile, overwrite);
+            GetNewDb(dbfile, true);
 
+            GetYChartsDb(dbfile);
+        }
 
-            int num = 200;
+        static void GetNewDb(string dbfile, bool newdb)
+        {
+            int num = 30;
 
+            Trading.Database db = new Trading.Database(dbfile, newdb);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            IEXData.DownloadSymbol("FTF^#", IEXData.HistoryType.FiveYear);
             db.GetAllData2(Trading.IEXData.HistoryType.FiveYear, num);
-            Trading.Debug.Nlog("Get all " + ((float)sw.ElapsedMilliseconds / 1000).ToString() + " seconds");
+            Trading.Debug.Nlog("Get all took " + ((float)sw.ElapsedMilliseconds / 1000 /60).ToString() + " minutes");
+            db.DB.Dispose();
             
-            sw.Restart();
+        }
+
+        static void GetYChartsDb(string dbfile)
+        {
+            Trading.Database db = new Trading.Database(dbfile, false);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var col = db.DB.GetCollection<Trading.Company>("data");
+            List<Company> cList = col.FindAll().ToList();
+            db.GetYChartsEpsData(cList);
+            Trading.Debug.Nlog("Get all Ycharts took " + ((float)sw.ElapsedMilliseconds / 1000 / 60).ToString() + " minutes");
+            db.DB.Dispose();
+        }
+        static void RunSimulation(string dbfile)
+        {
+            Stopwatch sw = new Stopwatch();
+            Trading.Database db = new Trading.Database(dbfile, false);
+            sw.Start();
             List<Company> list = new List<Company>();
             var col = db.DB.GetCollection<Trading.Company>("data");
             for (int i = 1; i < col.Count(); i++ )
@@ -51,6 +73,7 @@ namespace Test
             List<CupHandle> cupHandles = new List<CupHandle>();
             List<string> chSymbols = new List<string>();
 
+            string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
             if (File.Exists(cupDbFile))
                 File.Delete(cupDbFile);
 
@@ -338,8 +361,9 @@ namespace Test
             Trading.Debug.Nlog("Found " + (cupHandleId + 1).ToString() + " handles");
             Trading.Debug.Nlog("Finished");
             Console.ReadKey();
-            
         }
+            
+
 
         
     }

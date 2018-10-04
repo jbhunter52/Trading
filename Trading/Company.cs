@@ -36,9 +36,10 @@ namespace Trading
         public float maxDayChangePerc { get; set; }
         //public List<CupHandle> FullCupHandles { get; set; }
         public CupHandle CurrentCupHandle { get; set; }
-        public EarningsData Earnings { get; set; }
+        public List<LocalDate> EarningsQuarters { get; set; }
+        public List<float> EarningsData { get; set; }
 
-        public Company(string symbol, List<HistoricalDataResponse> data, EarningsData earnings, SymbolData sym = null)
+        public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
         {
             Count = 0;
             date = new List<LocalDate>();
@@ -59,7 +60,9 @@ namespace Trading
             MovingRelativePriceVolume = new List<float>();
             //FullCupHandles = new List<CupHandle>();
             CurrentCupHandle = new CupHandle();
-            Earnings = new EarningsData();
+            //Earnings = new EarningsData();
+            EarningsQuarters = new List<LocalDate>();
+            EarningsData = new List<float>();
 
             this.Symbol = symbol;
             if (sym != null)
@@ -117,7 +120,7 @@ namespace Trading
             MovingRelativePriceVolume = MathHelpers.MovingAverage(RelativePriceVolume, 50);
           
             //EarningsData
-            Earnings = earnings;
+            //Earnings = earnings;
         }
 
         public Company()
