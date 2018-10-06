@@ -8,151 +8,123 @@ using Trading;
 using LiteDB;
 using System.Diagnostics;
 using NodaTime;
+using System.Data;
 
-namespace Test
+namespace Trading
 {
-    class RunSim
+    public class Sim
     {
-        static void Main(string[] args)
+        public string Dbfile;
+        public LocalDate StartDay;
+        public LocalDate EndDay;
+        public Portfolio Portfolio;
+        public CupHandleParameters Chp;
+        public List<LocalDate> Dates;
+        public List<float> Values;
+
+        public Sim()
         {
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
-            //if (File.Exists(dbfile))
-            //{
-            //    string path = Path.GetDirectoryName(dbfile);
-            //    string fn = Path.GetFileNameWithoutExtension(dbfile);
-            //    string[] split = fn.Split('_');
-            //    if (split.Length == 2)
-            //    {
-            //        int current = int.Parse(split[1]);
-            //        current++;
-            //        dbfile = Path.Combine(path, fn + "_" + current.ToString() + ".db");
-            //    }
-            //    else
-            //    {
-            //        dbfile = Path.Combine(path, fn + "_1.db");
-            //    }
-            //}
-            //GetNewDb(dbfile, true);
-
-            //GetYChartsDb(dbfile);
-
-            //RunSimulation(dbfile);
-
-            Sim s = new Sim();
-
-            s.SetDefault();
-            s.Dbfile = dbfile;
-            List<Company> list = s.GetTradeList();
-
-            for (int i = 0; i < 10; i++)
-            {
-                s.Run(list);
-                Console.WriteLine(s.Values[s.Values.Count - 1].ToString());
-            }
         }
 
-        static void GetNewDb(string dbfile, bool newdb)
+        public void SetDefault()
         {
-            int num = -1;
-
-            Trading.Database db = new Trading.Database(dbfile, newdb);
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            db.GetAllData2(Trading.IEXData.HistoryType.FiveYear, num);
-            Trading.Debug.Nlog("Get all took " + ((float)sw.ElapsedMilliseconds / 1000 /60).ToString() + " minutes");
-            db.DB.Dispose();
-            
+            Dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
+            StartDay = new LocalDate(2013, 9, 19);
+            EndDay = new LocalDate(2018, 9, 27);
+            Portfolio = new Portfolio(10000.0f, 1.20f, 0.92f, 1000.0f);
+            Chp = new CupHandleParameters(CupHandleDefinition.Haiku1);
         }
 
-        static void GetYChartsDb(string dbfile)
-        {
-            Trading.Database db = new Trading.Database(dbfile, false);
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            var col = db.DB.GetCollection<Trading.Company>("data");
-            List<Company> cList = col.FindAll().ToList();
-            db.GetYChartsEpsData(cList);
-            Trading.Debug.Nlog("Get all Ycharts took " + ((float)sw.ElapsedMilliseconds / 1000 / 60).ToString() + " minutes");
-            db.DB.Dispose();
-        }
-        static void RunSimulation(string dbfile)
+        public List<Company> GetTradeList()
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            Trading.Database db = new Trading.Database(dbfile, false);
+            Trading.Database db = new Trading.Database(Dbfile, false);
             List<Company> list = new List<Company>();
+
             var col = db.DB.GetCollection<Trading.Company>("data");
             Trading.Debug.Nlog("Sim Start, total in collection, " + col.Count());
             list = col.Find(Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0)).ToList();
+            //list = col.Find(Query.And(Query.LT("Id", 500),Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0))).ToList();
             Trading.Debug.Nlog("Sim Start, total with earnings data, " + list.Count);
             sw.Stop();
-            Trading.Debug.Nlog("Database query time, " + sw.Elapsed.TotalMinutes.ToString() + " minutes");
-            sw.Reset();
-            sw.Start();
-            for (int i = 0; i < list.Count; i++ )
+
+            for (int i = 0; i < list.Count; i++)
             {
                 Company c = list[i];
                 c.CurrentCupHandle = new CupHandle();
                 c.Iterator = -1; //reset iterator
             }
+            Trading.Debug.Nlog("Database query time, " + sw.Elapsed.TotalMinutes.ToString() + " minutes");
+            sw.Reset();
+
+
             //list = col.Find(Query.And(Query.GT("MinClose", 2.0f), Query.GT("MinVolume", 1000), Query.LT("maxDayChangePerc", 1.5))).ToList();
             Trading.Debug.Nlog("After filter " + list.Count.ToString() + " stocks");
             Trading.Debug.Nlog("Filter " + ((float)sw.ElapsedMilliseconds / 1000).ToString() + " seconds");
 
-            CupHandleParameters chp = new CupHandleParameters(CupHandleDefinition.Haiku1);
+            return list;
+        }
 
-            LocalDate startDay = new LocalDate(2013, 9, 19);
-            LocalDate endDay = new LocalDate(2018, 9, 27);
-            int runDays = Period.Between(startDay, endDay, PeriodUnits.Days).Days;
+        public void Run(List<Company> list, IProgress<Result> progress = null)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            Dates = new List<LocalDate>();
+            Values = new List<float>();
+
+            //initialize iterator
+            //foreach (Company c in list)
+            //{
+            //    c.Iterator = -1;
+            //}
+
+            int runDays = Period.Between(StartDay, EndDay, PeriodUnits.Days).Days;
             List<CupHandle> cupHandles = new List<CupHandle>();
             List<string> chSymbols = new List<string>();
 
-            string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
+            string cupDbFile = Path.Combine(Path.GetDirectoryName(Dbfile), Path.GetFileNameWithoutExtension(Dbfile) + "_ch.db");
             if (File.Exists(cupDbFile))
                 File.Delete(cupDbFile);
 
             int cupHandleId = 1;
-
-            Portfolio portfolio = new Portfolio(10000.0f, 1.20f, 0.92f, 1000.0f);
 
             using (LiteDatabase chDb = new LiteDatabase(cupDbFile))
             {
                 var colch = chDb.GetCollection<CupHandle>("CupHandle");
                 for (int i = 0; i < runDays; i++)
                 {
-                    LocalDate thisDay = startDay.PlusDays(i);
-                    string mess = thisDay.ToString() + ", " + portfolio.GetTotalValue().ToString() + ", Total Assets: " + portfolio.Assets.Count.ToString();
-                    Trading.Debug.Nlog(mess);
-                    Trading.Debug.Nlog(mess);
+                    LocalDate thisDay = StartDay.PlusDays(i);
+                    Dates.Add(thisDay);
                     foreach (Company c in list)
                     {
-                        if (c.Iterator >= c.date.Count) //Check if day is > data
-                            continue;
+                        //if (c.Iterator >= c.date.Count) //Check if day is > data
+                        //    continue;
                         
                         int thisDayInd = -1;
 
-                        if (c.Iterator < 0)
-                        {
-                            if (thisDay.CompareTo(c.date[0]) == 0)
-                            {
-                                c.Iterator = 0; //Initialize for first day of data
-                            }
-                        }
+                        //if (c.Iterator < 0)
+                        //{
+                        //    if (thisDay.CompareTo(c.date[0]) == 0)
+                        //    {
+                        //        c.Iterator = 0; //Initialize for first day of data
+                        //    }
+                        //}
+
+                        thisDayInd = c.date.BinarySearch(thisDay);
                         //bool found = c.FindIndexByDate(thisDay, out thisDayInd);
-                        if (c.Iterator >= 0)
+                        if (thisDayInd >= 0)
                         {
                             //Start day
-                            thisDayInd = c.Iterator;
-                            thisDay = c.date[c.Iterator];
+                            //thisDayInd = c.Iterator;
+                            //thisDay = c.date[c.Iterator];
 
                             CupHandle ch = new CupHandle();
                             //Check if cuphandle is established
                             if (c.CurrentCupHandle.D.Index > 0)
                             {
-                                int endBuySearch = c.CurrentCupHandle.D.Index + (int)(chp.BuyWait * (c.CurrentCupHandle.C.Index - c.CurrentCupHandle.A.Index));
+                                int endBuySearch = c.CurrentCupHandle.D.Index + (int)(Chp.BuyWait * (c.CurrentCupHandle.C.Index - c.CurrentCupHandle.A.Index));
                                 if (c.CurrentCupHandle.D.Index + 1 >= c.close.Count)
                                     break;
                                 if (endBuySearch >= c.close.Count)
@@ -175,10 +147,10 @@ namespace Test
                                             cupHandleId++;
 
                                             //Buy Triggered
-                                            if (portfolio.Cash > 1000)
+                                            if (Portfolio.Cash > Portfolio.BuyAmount)
                                             {
                                                 Trading.Debug.Nlog("Bought " + c.Symbol);
-                                                portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, 1000.0f));
+                                                Portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, Portfolio.BuyAmount, thisDay));
                                             }
 
                                             c.CurrentCupHandle = new CupHandle(); //restart cuphandle
@@ -201,10 +173,10 @@ namespace Test
                             {
                                 int lastA = thisDayInd - c.CurrentCupHandle.A.Index;
 
-                                if (chp.AC.ContainsValue(lastA)) //Last A in correct Range, search for C
+                                if (Chp.AC.ContainsValue(lastA)) //Last A in correct Range, search for C
                                 {
                                     Point possibleC = c.GetPoint(thisDayInd);
-                                    if (chp.PivotRatio.ContainsValue(possibleC.Close / c.CurrentCupHandle.A.Close))
+                                    if (Chp.PivotRatio.ContainsValue(possibleC.Close / c.CurrentCupHandle.A.Close))
                                     {
                                         // Pc/Pa is now verified to be within the pivot ratio range
                                         if (c.EnsurePointJ(possibleC, ch)) //Now check that no Pj exceeds line connection Pc and Pa
@@ -215,7 +187,7 @@ namespace Test
 
                                             //Use URPV3 to find B???
                                             //BC range, or Frame 3 span, or RightCup
-                                            int rangeBC = chp.CupRight.Maximum - chp.CupRight.Minimum;
+                                            int rangeBC = Chp.CupRight.Maximum - Chp.CupRight.Minimum;
                                             int startBsearch = c.CurrentCupHandle.C.Index - rangeBC;
                                             float urpvSum = 0;
                                             float drpvSum = 0;
@@ -282,8 +254,8 @@ namespace Test
                                                 c.CurrentCupHandle.SetB(c.GetPoint(bestR1R3Index));
 
                                                 //Now continue and find PointD the handle
-                                                int rangeCD = chp.Handle.Maximum - chp.Handle.Minimum;
-                                                int startDsearch = c.CurrentCupHandle.C.Index + chp.CupRight.Minimum;
+                                                int rangeCD = Chp.Handle.Maximum - Chp.Handle.Minimum;
+                                                int startDsearch = c.CurrentCupHandle.C.Index + Chp.CupRight.Minimum;
                                                 int endDsearch = startDsearch + rangeCD;
                                                 if (startDsearch >= c.close.Count)
                                                     break;
@@ -338,7 +310,7 @@ namespace Test
                                                         float CDdiff = c.CurrentCupHandle.C.Close - dClose;
                                                         if (dClose < c.CurrentCupHandle.C.Close)
                                                         {
-                                                            if (dClose > (c.CurrentCupHandle.B.Close + CBdiff*0.5))
+                                                            if (dClose > (c.CurrentCupHandle.B.Close + CBdiff * Chp.CBdiffMin))
                                                             {
                                                                 newR2arr.Add(R2arr[cnt]);
                                                             }
@@ -358,7 +330,7 @@ namespace Test
                                                         //D found !!!
                                                         //Debug.Nlog("D found!!!");
                                                         c.CurrentCupHandle.R2 = R2arr[ind];
-                                                        if (c.CurrentCupHandle.GetRank() > chp.MinRank)
+                                                        if (c.CurrentCupHandle.GetRank() > Chp.MinRank)
                                                         {
                                                             LocalDate dDate = c.date[bestR2Index];
 
@@ -376,23 +348,23 @@ namespace Test
                                 }
                             }
 
-                            int index = portfolio.Assets.FindIndex(x => x.Symbol.Equals(c.Symbol));
+                            int index = Portfolio.Assets.FindIndex(x => x.Symbol.Equals(c.Symbol));
                             if (index >= 0)
                             {
                                 float perShare = c.close[thisDayInd];
-                                Asset a = portfolio.Assets[index];
+                                Asset a = Portfolio.Assets[index];
                                 a.SetCurrentValue(perShare);
                                 float change = perShare/a.PerShareInitial;
 
-                                if (change > (portfolio.StopGain))
+                                if (change > (Portfolio.StopGain))
                                 {
                                     Trading.Debug.Nlog("Sold " + a.Symbol + " for gain");
-                                    portfolio.Sell(a, perShare); //Set asset for gain
+                                    Portfolio.Sell(a, perShare); //Set asset for gain
                                 }
-                                if (change < portfolio.StopLoss)
+                                if (change < Portfolio.StopLoss)
                                 {
                                     Trading.Debug.Nlog("Sold " + a.Symbol + " for loss");
-                                    portfolio.Sell(a, perShare); //sell asset for loss
+                                    Portfolio.Sell(a, perShare); //sell asset for loss
                                 }
                                     
                             }
@@ -404,9 +376,35 @@ namespace Test
                     }
 
                     //end of trading day loop
+                    float endOfDayValue = Portfolio.GetTotalValue();
+                    string mess = thisDay.ToString() + ", " + endOfDayValue.ToString() + ", Total Assets: " + Portfolio.Assets.Count.ToString();
+                    Trading.Debug.Nlog(mess);
+                    Values.Add(endOfDayValue);
 
+                    Result r = new Result();
+                    r.Date = thisDay;
+                    r.PercComp = (float)i/runDays;
+                    r.Portfolio = Portfolio;
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("Symbol", typeof(string));
+                    dt.Columns.Add("BuyDate", typeof(string));
+                    dt.Columns.Add("Initial Value", typeof(float));
+                    dt.Columns.Add("Current Value", typeof(float));
+                    dt.Columns.Add("GainLoss", typeof(float));
 
-
+                    foreach (Asset a in r.Portfolio.Assets)
+                    {
+                        string date = a.BuyDate.Month.ToString() + "/" + a.BuyDate.Day.ToString() + "/" + a.BuyDate.Year.ToString();
+                        float gainloss = (a.CurrentTotalValue - a.PerShareInitial) / a.PerShareInitial;
+                        dt.Rows.Add(a.Symbol, a.PerShareInitial, a.CurrentTotalValue, gainloss);
+                    }
+                    r.Dt = dt;
+                    //ProgressUpdateArgs arg = new ProgressUpdateArgs(r);
+                    //OnProgressUpdate(this, arg);
+                    if (progress != null)
+                    {
+                        progress.Report(r);
+                    }
                 }
             }
             Trading.Debug.Nlog("Found " + (cupHandleId + 1).ToString() + " handles");
@@ -415,11 +413,30 @@ namespace Test
             Trading.Debug.Nlog("Finished");
             //Console.ReadKey();
         }
-            
 
+        public delegate void ProgressUpdate(object sender, ProgressUpdateArgs arg);
+        public event ProgressUpdate OnProgressUpdate;
 
-        
     }
+    public class ProgressUpdateArgs : EventArgs
+    {
+        public Result Result { get; private set; }
 
+        public ProgressUpdateArgs(Result result)
+        {
+            Result = result;
+        }
+    }
+    public class Result
+    {
+        public LocalDate Date;
+        public float PercComp;
+        public Portfolio Portfolio;
+        public DataTable Dt;
 
+        public Result()
+        {
+
+        }
+    }
 }

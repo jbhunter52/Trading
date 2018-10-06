@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockCharts", "StockCharts\StockCharts.csproj", "{CA51DD61-F2B9-478E-BFDA-CCE9D6C6D6A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketSim", "MarketSim\MarketSim.csproj", "{7656ADAD-DDA7-4C0B-B634-824E87A844FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CA51DD61-F2B9-478E-BFDA-CCE9D6C6D6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA51DD61-F2B9-478E-BFDA-CCE9D6C6D6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA51DD61-F2B9-478E-BFDA-CCE9D6C6D6A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7656ADAD-DDA7-4C0B-B634-824E87A844FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7656ADAD-DDA7-4C0B-B634-824E87A844FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7656ADAD-DDA7-4C0B-B634-824E87A844FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7656ADAD-DDA7-4C0B-B634-824E87A844FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

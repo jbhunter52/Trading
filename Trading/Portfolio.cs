@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodaTime;
 
 namespace Trading
 {
@@ -12,13 +13,15 @@ namespace Trading
         public float Cash;
         public float StopGain;
         public float StopLoss;
+        public float BuyAmount;
 
-        public Portfolio(float cash, float stopGain, float stopLoss)
+        public Portfolio(float cash, float stopGain, float stopLoss, float buyAmount)
         {
             Assets = new List<Asset>();
             Cash = cash;
             StopGain = stopGain;
             StopLoss = stopLoss;
+            BuyAmount = buyAmount;
         }
 
         public void Buy(Asset asset)

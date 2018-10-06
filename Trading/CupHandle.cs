@@ -9,35 +9,22 @@ using NodaTime;
 
 namespace Trading
 {
-    [ZeroFormattable]
     public class CupHandle
     {
         [BsonId]
         public int Id { get; set; }
         public string Symbol { get; set; }
-        [Index(0)]
-        public virtual Point K { get; set; }
-        [Index(1)]
-        public virtual Point A { get; set; }
-        [Index(2)]
-        public virtual Point B { get; set; }
-        [Index(3)]
-        public virtual Point C { get; set; }
-        [Index(4)]
-        public virtual Point D { get; set; }
-        [Index(5)]
-        public virtual Point Buy { get; set; }
-        [Index(6)]
-        public virtual bool BuyTrigger { get; set; }
-        [Index(7)]
-        public virtual double Gamma { get; set; }
-        [Index(8)]
-        public virtual float R1 { get; set; }
-        [Index(9)]
-        public virtual float R2 { get; set; }
-        [Index(10)]
-        public virtual float R3 { get; set; }
-
+        public Point K { get; set; }
+        public Point A { get; set; }
+        public Point B { get; set; }
+        public Point C { get; set; }
+        public Point D { get; set; }
+        public Point Buy { get; set; }
+        public bool BuyTrigger { get; set; }
+        public double Gamma { get; set; }
+        public float R1 { get; set; }
+        public float R2 { get; set; }
+        public float R3 { get; set; }
         
         public CupHandle()
         {
@@ -130,20 +117,15 @@ namespace Trading
     [ZeroFormattable]
     public class CupHandleParameters
     {
-        [Index(0)]
-        public virtual Range<int> Setup { get; set; } //K-A
-        [Index(1)]
-        public virtual Range<int> CupLeft { get; set; } //A-B
-        [Index(2)]
-        public virtual Range<int> CupRight { get; set; } //B-C
-        [Index(3)]
-        public virtual Range<int> Handle { get; set; } //C-D
-        [Index(4)]
-        public virtual Range<int> AC { get; set; }
-        [Index(5)]
-        public virtual Range<float> PivotRatio { get; set; } //Pc/Pa
+        public Range<int> Setup { get; set; } //K-A
+        public Range<int> CupLeft { get; set; } //A-B
+        public Range<int> CupRight { get; set; } //B-C
+        public Range<int> Handle { get; set; } //C-D
+        public Range<int> AC { get; set; }
+        public Range<float> PivotRatio { get; set; } //Pc/Pa
         public float BuyWait { get; set; }
         public float MinRank;
+        public float CBdiffMin { get; set; }
 
         public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio, float minRank)
         {
@@ -154,6 +136,7 @@ namespace Trading
             AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
             BuyWait = 0.5f;
             MinRank = minRank;
+            CBdiffMin = 0.5f;
         }
         public string Serialize()
         {
@@ -171,6 +154,7 @@ namespace Trading
             AC = chp.AC;
             PivotRatio = chp.PivotRatio;
             BuyWait = chp.BuyWait;
+            CBdiffMin = 0.5f;
         }
 
         public CupHandleParameters(CupHandleDefinition ch)
