@@ -163,7 +163,10 @@ namespace Trading
                     {
                         if (symbolData != null)
                         {
-                            symbols.Add(symbolData);
+                            if (symbolData.type.Equals("cs"))
+                            {
+                                symbols.Add(symbolData);
+                            }
                         }
                     }
                 }

@@ -13,7 +13,7 @@ namespace Trading
         public string Name { get; set; }
         public string Symbol {get;set;}
         //public List<HistoricalDataResponse> Data { get; set; }
-
+        public int Iterator { get; set; }
         public int Count { get; set; }
         public List<LocalDate> date { get; set; }
         public List<float> open { get; set; }
@@ -41,6 +41,7 @@ namespace Trading
 
         public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
         {
+            Iterator = -1;
             Count = 0;
             date = new List<LocalDate>();
             open = new List<float>();

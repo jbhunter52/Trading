@@ -98,16 +98,30 @@ namespace Trading
         {
             List<Task> tasks = new List<Task>();
             current = 0;
+            System.Net.IPAddress[] ips = System.Net.Dns.GetHostEntry("proxy-nl.privateinternetaccess.com").AddressList;
 
+            List<com.LandonKey.SocksWebProxy.SocksWebProxy> proxies = new List<com.LandonKey.SocksWebProxy.SocksWebProxy>(ips.Length);
+            foreach (System.Net.IPAddress ip in ips)
+            {
+                com.LandonKey.SocksWebProxy.Proxy.ProxyConfig pc = new com.LandonKey.SocksWebProxy.Proxy.ProxyConfig(System.Net.IPAddress.Parse("127.0.0.1"), 1080, ip, 1080, com.LandonKey.SocksWebProxy.Proxy.ProxyConfig.SocksVersion.Five, "x7212591", "c4gkjs4rSg");
+                var proxy = new com.LandonKey.SocksWebProxy.SocksWebProxy(pc);
+                proxies.Add(proxy);
+            }
+
+            int proxyCnt = 0;
             for (int i = 0; i < cList.Count; i++ )
             {
                 Company c = cList[i];
-                var t = new Task(() => ProcessSymbolYChartEps(cList.Count, c));
+                var t = new Task(() => ProcessSymbolYChartEps(cList.Count, c, proxies[proxyCnt]));
                 tasks.Add(t);
+
+                proxyCnt++;
+                if (proxyCnt >= proxies.Count)
+                    proxyCnt = 0;
             }
             sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            StartAndWaitAllThrottled(tasks, 1, 20000000);
+            StartAndWaitAllThrottled(tasks, proxies.Count, 20000000);
         }
 
         public static void StartAndWaitAllThrottled(IEnumerable<Task> tasksToRun, int maxActionsToRunInParallel, int timeoutInMilliseconds, CancellationToken cancellationToken = new CancellationToken())
@@ -137,16 +151,23 @@ namespace Trading
                 Task.WaitAll(postTaskTasks.ToArray(), cancellationToken);
             }
         }
-        public void ProcessSymbolYChartEps(int total, Company c)
+        public void ProcessSymbolYChartEps(int total, Company c, com.LandonKey.SocksWebProxy.SocksWebProxy proxy)
         {
             Random r = new Random();
             System.Threading.Thread.Sleep(500 + r.Next(1000));  //Sleep between 500-1500 ms
-            EpsData data = YChartsData.GetEpsData(c.Symbol);
-            c.EarningsQuarters = data.Quarters;
-            c.EarningsData = data.Eps;
-
+            EpsData data = YChartsData.GetEpsData(c.Symbol, proxy);
             var col = DB.GetCollection<Trading.Company>("data");
-            col.Update(c);
+
+            if (data.Quarters.Count > 0)
+            {
+                c.EarningsQuarters = data.Quarters;
+                c.EarningsData = data.Eps;
+                col.Update(c);
+            }
+            else
+            {
+                col.Delete(c.Id);
+            }
 
             current++;
             int left = total - current;

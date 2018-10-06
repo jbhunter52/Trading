@@ -15,15 +15,33 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-28-18.db";
-            GetNewDb(dbfile, true);
+            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
+            //if (File.Exists(dbfile))
+            //{
+            //    string path = Path.GetDirectoryName(dbfile);
+            //    string fn = Path.GetFileNameWithoutExtension(dbfile);
+            //    string[] split = fn.Split('_');
+            //    if (split.Length == 2)
+            //    {
+            //        int current = int.Parse(split[1]);
+            //        current++;
+            //        dbfile = Path.Combine(path, fn + "_" + current.ToString() + ".db");
+            //    }
+            //    else
+            //    {
+            //        dbfile = Path.Combine(path, fn + "_1.db");
+            //    }
+            //}
+            //GetNewDb(dbfile, true);
 
-            GetYChartsDb(dbfile);
+            //GetYChartsDb(dbfile);
+
+            RunSimulation(dbfile);
         }
 
         static void GetNewDb(string dbfile, bool newdb)
         {
-            int num = 30;
+            int num = -1;
 
             Trading.Database db = new Trading.Database(dbfile, newdb);
 
@@ -51,15 +69,22 @@ namespace Test
         static void RunSimulation(string dbfile)
         {
             Stopwatch sw = new Stopwatch();
-            Trading.Database db = new Trading.Database(dbfile, false);
             sw.Start();
+            Trading.Database db = new Trading.Database(dbfile, false);
             List<Company> list = new List<Company>();
             var col = db.DB.GetCollection<Trading.Company>("data");
-            for (int i = 1; i < col.Count(); i++ )
+            Trading.Debug.Nlog("Sim Start, total in collection, " + col.Count());
+            list = col.Find(Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0)).ToList();
+            Trading.Debug.Nlog("Sim Start, total with earnings data, " + list.Count);
+            sw.Stop();
+            Trading.Debug.Nlog("Database query time, " + sw.Elapsed.TotalMinutes.ToString() + " minutes");
+            sw.Reset();
+            sw.Start();
+            for (int i = 0; i < list.Count; i++ )
             {
-                Company c = col.FindById(i);
+                Company c = list[i];
                 c.CurrentCupHandle = new CupHandle();
-                list.Add(c);
+                c.Iterator = -1; //reset iterator
             }
             //list = col.Find(Query.And(Query.GT("MinClose", 2.0f), Query.GT("MinVolume", 1000), Query.LT("maxDayChangePerc", 1.5))).ToList();
             Trading.Debug.Nlog("After filter " + list.Count.ToString() + " stocks");
@@ -92,12 +117,26 @@ namespace Test
                     Trading.Debug.Nlog(mess);
                     foreach (Company c in list)
                     {
-                        CupHandle ch = new CupHandle();
+                        if (c.Iterator >= c.date.Count) //Check if day is > data
+                            continue;
+                        
                         int thisDayInd = -1;
-                        bool found = c.FindIndexByDate(thisDay, out thisDayInd);
-                        if (found)
-                        {
 
+                        if (c.Iterator < 0)
+                        {
+                            if (thisDay.CompareTo(c.date[0]) == 0)
+                            {
+                                c.Iterator = 0; //Initialize for first day of data
+                            }
+                        }
+                        //bool found = c.FindIndexByDate(thisDay, out thisDayInd);
+                        if (c.Iterator >= 0)
+                        {
+                            //Start day
+                            thisDayInd = c.Iterator;
+                            thisDay = c.date[c.Iterator];
+
+                            CupHandle ch = new CupHandle();
                             //Check if cuphandle is established
                             if (c.CurrentCupHandle.D.Index > 0)
                             {
@@ -347,7 +386,7 @@ namespace Test
                             }
 
                         }
-
+                        c.Iterator++;
                         //End of company loop
 
                     }
@@ -359,8 +398,10 @@ namespace Test
                 }
             }
             Trading.Debug.Nlog("Found " + (cupHandleId + 1).ToString() + " handles");
+            sw.Stop();
+            Trading.Debug.Nlog("Total sim time, " + sw.Elapsed.TotalMinutes.ToString() + " minutes");
             Trading.Debug.Nlog("Finished");
-            Console.ReadKey();
+            //Console.ReadKey();
         }
             
 
