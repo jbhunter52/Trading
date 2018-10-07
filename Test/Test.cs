@@ -35,16 +35,16 @@ namespace Test
 
 
 
-            Simulation sim = new Simulation();
-            Console.WriteLine("Initializing...");
-            sim.Dbfile = dbfile;
-            sim.SetDefault();
-            List<Company> list = sim.GetTradeList();
+            //Simulation sim = new Simulation();
+            //Console.WriteLine("Initializing...");
+            //sim.Dbfile = dbfile;
+            //sim.SetDefault();
+            //List<Company> list = sim.GetTradeList();
 
-            sim.Run(list);
+            //sim.Run(list);
 
-            //Optimization ga = new Optimization(dbfile);
-            //ga.Optimize();
+            Optimization ga = new Optimization(dbfile);
+            ga.Optimize();
 
             //s.SetDefault();
             //s.Dbfile = dbfile;

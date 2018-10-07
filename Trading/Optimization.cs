@@ -29,7 +29,7 @@ namespace Trading
             Dbfile = dbFile;
             List = sim.GetTradeList();
         }
-        public void Optimize()
+        public void Optimize(bool parallel)
         {
             Console.WriteLine("Running optimization");
             // Rank StopGain StopLoss MinEpsGrowth
