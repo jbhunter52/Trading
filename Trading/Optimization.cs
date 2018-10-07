@@ -12,6 +12,7 @@ using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Domain.Randomizations;
+using GeneticSharp.Infrastructure.Framework.Threading;
 
 namespace Trading
 {
@@ -29,7 +30,7 @@ namespace Trading
             Dbfile = dbFile;
             List = sim.GetTradeList();
         }
-        public void Optimize(bool parallel)
+        public void Optimize(bool parallel = false)
         {
             Console.WriteLine("Running optimization");
             // Rank StopGain StopLoss MinEpsGrowth
@@ -50,6 +51,13 @@ namespace Trading
             selection,
             crossover,
             mutation);
+
+            if (parallel)
+            {
+                var taskExecutor = new ParallelTaskExecutor();
+                taskExecutor.MinThreads = 2;
+                taskExecutor.MaxThreads = 4;
+            }
 
             ga.Termination = termination;
 
