@@ -206,5 +206,34 @@ namespace Trading
             }
             return under;
         }
+
+        public float ComputeEarningsGrowth(LocalDate today, int minQuarters)
+        {
+            if (EarningsQuarters.Count == 0)
+                return float.NaN;
+
+            int currQuarter = -1;
+            for (int i = 0; i < EarningsQuarters.Count; i++)
+            {
+                var quarterDate = EarningsQuarters[i];
+                if (today.CompareTo(quarterDate) < 0)
+                    currQuarter = i;
+            }
+
+            if (currQuarter < minQuarters)
+                return float.NaN;
+
+            float prevEps = 0;
+            for (int i = currQuarter-minQuarters; i <= currQuarter; i++)
+            {
+                prevEps += EarningsData[i];
+            }
+            prevEps = prevEps / (minQuarters - 1);
+
+            float thisEps = EarningsData[currQuarter];
+
+            float growth = (thisEps - prevEps) / prevEps;
+            return growth;
+        }
     }
 }

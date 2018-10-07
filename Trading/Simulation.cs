@@ -12,27 +12,30 @@ using System.Data;
 
 namespace Trading
 {
-    public class Sim
+    public class Simulation
     {
         public string Dbfile;
         public LocalDate StartDay;
         public LocalDate EndDay;
         public Portfolio Portfolio;
+        public float MinEpsGrowth;
+        public int MinNumPrevQuarters;
         public CupHandleParameters Chp;
         public List<LocalDate> Dates;
         public List<float> Values;
 
-        public Sim()
+        public Simulation()
         {
         }
 
         public void SetDefault()
         {
-            Dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
             StartDay = new LocalDate(2013, 9, 19);
             EndDay = new LocalDate(2018, 9, 27);
             Portfolio = new Portfolio(10000.0f, 1.20f, 0.92f, 1000.0f);
             Chp = new CupHandleParameters(CupHandleDefinition.Haiku1);
+            MinEpsGrowth = 0.25f;
+            MinNumPrevQuarters = 3;
         }
 
         public List<Company> GetTradeList()
@@ -44,6 +47,7 @@ namespace Trading
 
             var col = db.DB.GetCollection<Trading.Company>("data");
             Trading.Debug.Nlog("Sim Start, total in collection, " + col.Count());
+            //list = col.FindAll().ToList();
             list = col.Find(Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0)).ToList();
             //list = col.Find(Query.And(Query.LT("Id", 500),Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0))).ToList();
             Trading.Debug.Nlog("Sim Start, total with earnings data, " + list.Count);
@@ -92,6 +96,7 @@ namespace Trading
 
             using (LiteDatabase chDb = new LiteDatabase(cupDbFile))
             {
+                Trading.Debug.Nlog("Starting simulation");
                 var colch = chDb.GetCollection<CupHandle>("CupHandle");
                 for (int i = 0; i < runDays; i++)
                 {
@@ -119,6 +124,10 @@ namespace Trading
                             //Start day
                             //thisDayInd = c.Iterator;
                             //thisDay = c.date[c.Iterator];
+
+                            float epsGrowth = c.ComputeEarningsGrowth(thisDay, MinNumPrevQuarters);
+                            if (epsGrowth == float.NaN || epsGrowth < MinEpsGrowth)
+                                continue;
 
                             CupHandle ch = new CupHandle();
                             //Check if cuphandle is established
@@ -151,8 +160,8 @@ namespace Trading
                                             {
                                                 Trading.Debug.Nlog("Bought " + c.Symbol);
                                                 Portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, Portfolio.BuyAmount, thisDay));
+                                                ReportProgress(progress, thisDay, i, runDays);
                                             }
-
                                             c.CurrentCupHandle = new CupHandle(); //restart cuphandle
                                             break;
                                         }
@@ -360,11 +369,13 @@ namespace Trading
                                 {
                                     Trading.Debug.Nlog("Sold " + a.Symbol + " for gain");
                                     Portfolio.Sell(a, perShare); //Set asset for gain
+                                    ReportProgress(progress, thisDay, i, runDays);
                                 }
                                 if (change < Portfolio.StopLoss)
                                 {
                                     Trading.Debug.Nlog("Sold " + a.Symbol + " for loss");
                                     Portfolio.Sell(a, perShare); //sell asset for loss
+                                    ReportProgress(progress, thisDay, i, runDays);
                                 }
                                     
                             }
@@ -374,37 +385,10 @@ namespace Trading
                         //End of company loop
 
                     }
-
-                    //end of trading day loop
                     float endOfDayValue = Portfolio.GetTotalValue();
                     string mess = thisDay.ToString() + ", " + endOfDayValue.ToString() + ", Total Assets: " + Portfolio.Assets.Count.ToString();
                     Trading.Debug.Nlog(mess);
-                    Values.Add(endOfDayValue);
-
-                    Result r = new Result();
-                    r.Date = thisDay;
-                    r.PercComp = (float)i/runDays;
-                    r.Portfolio = Portfolio;
-                    DataTable dt = new DataTable();
-                    dt.Columns.Add("Symbol", typeof(string));
-                    dt.Columns.Add("BuyDate", typeof(string));
-                    dt.Columns.Add("Initial Value", typeof(float));
-                    dt.Columns.Add("Current Value", typeof(float));
-                    dt.Columns.Add("GainLoss", typeof(float));
-
-                    foreach (Asset a in r.Portfolio.Assets)
-                    {
-                        string date = a.BuyDate.Month.ToString() + "/" + a.BuyDate.Day.ToString() + "/" + a.BuyDate.Year.ToString();
-                        float gainloss = (a.CurrentTotalValue - a.PerShareInitial) / a.PerShareInitial;
-                        dt.Rows.Add(a.Symbol, a.PerShareInitial, a.CurrentTotalValue, gainloss);
-                    }
-                    r.Dt = dt;
-                    //ProgressUpdateArgs arg = new ProgressUpdateArgs(r);
-                    //OnProgressUpdate(this, arg);
-                    if (progress != null)
-                    {
-                        progress.Report(r);
-                    }
+                    //end of trading day loop
                 }
             }
             Trading.Debug.Nlog("Found " + (cupHandleId + 1).ToString() + " handles");
@@ -416,6 +400,54 @@ namespace Trading
 
         public delegate void ProgressUpdate(object sender, ProgressUpdateArgs arg);
         public event ProgressUpdate OnProgressUpdate;
+
+        public void ReportProgress(IProgress<Result> progress, LocalDate thisDay, int currentIndex, int runDays)
+        {
+            if (progress != null)
+            {
+                float endOfDayValue = Portfolio.GetTotalValue();
+                string mess = thisDay.ToString() + ", " + endOfDayValue.ToString() + ", Total Assets: " + Portfolio.Assets.Count.ToString();
+                Trading.Debug.Nlog(mess);
+                Values.Add(endOfDayValue);
+
+                Result r = new Result();
+                r.Date = thisDay;
+                r.PercComp = (float)currentIndex / runDays;
+                r.Portfolio = Portfolio;
+
+                #region DataTable
+                //DataTable dt = new DataTable();
+                //dt.Columns.Add("Symbol", typeof(string));
+                //dt.Columns.Add("BuyDate", typeof(string));
+                //dt.Columns.Add("Initial Value", typeof(float));
+                //dt.Columns.Add("Current Value", typeof(float));
+                //dt.Columns.Add("GainLoss", typeof(float));
+
+                //foreach (Asset a in r.Portfolio.Assets)
+                //{
+                //    string date = a.BuyDate.Month.ToString() + "/" + a.BuyDate.Day.ToString() + "/" + a.BuyDate.Year.ToString();
+                //    float gainloss = (a.CurrentTotalValue - a.PerShareInitial) / a.PerShareInitial;
+                //    dt.Rows.Add(a.Symbol, a.PerShareInitial, a.CurrentTotalValue, gainloss);
+                //}
+                //r.Dt = dt;
+                //ProgressUpdateArgs arg = new ProgressUpdateArgs(r);
+                //OnProgressUpdate(this, arg);
+                #endregion
+
+                #region PortfolioStatus
+                string status = "";
+                foreach (Asset a in Portfolio.Assets)
+                {
+                    string date = a.BuyDate.Month.ToString() + "/" + a.BuyDate.Day.ToString() + "/" + a.BuyDate.Year.ToString();
+                    float gainloss = (a.CurrentPerShare - a.PerShareInitial) / a.PerShareInitial;
+                    status = status + a.Symbol + ", " + date + ", " + ((int)(gainloss * 100)).ToString() + "%" + "\r\n";
+                }
+                r.Status = status;
+                #endregion
+
+                progress.Report(r);
+            }
+        }
 
     }
     public class ProgressUpdateArgs : EventArgs
@@ -433,6 +465,7 @@ namespace Trading
         public float PercComp;
         public Portfolio Portfolio;
         public DataTable Dt;
+        public string Status;
 
         public Result()
         {

@@ -11,50 +11,41 @@ using NodaTime;
 
 namespace Test
 {
-    class RunSim
+    class Test
     {
         static void Main(string[] args)
         {
+            //string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-6-18_small.db";
             string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
-            //if (File.Exists(dbfile))
-            //{
-            //    string path = Path.GetDirectoryName(dbfile);
-            //    string fn = Path.GetFileNameWithoutExtension(dbfile);
-            //    string[] split = fn.Split('_');
-            //    if (split.Length == 2)
-            //    {
-            //        int current = int.Parse(split[1]);
-            //        current++;
-            //        dbfile = Path.Combine(path, fn + "_" + current.ToString() + ".db");
-            //    }
-            //    else
-            //    {
-            //        dbfile = Path.Combine(path, fn + "_1.db");
-            //    }
-            //}
-            //GetNewDb(dbfile, true);
+            //GetNewDb(dbfile, true, 200);
 
             //GetYChartsDb(dbfile);
 
-            //RunSimulation(dbfile);
+            Simulation sim = new Simulation();
+            Console.WriteLine("Initializing...");
+            sim.Dbfile = dbfile;
+            sim.SetDefault();
+            List<Company> list = sim.GetTradeList();
 
-            Sim s = new Sim();
+            sim.Run(list);
 
-            s.SetDefault();
-            s.Dbfile = dbfile;
-            List<Company> list = s.GetTradeList();
+            //Optimization ga = new Optimization(dbfile);
+            //ga.Optimize();
 
-            for (int i = 0; i < 10; i++)
-            {
-                s.Run(list);
-                Console.WriteLine(s.Values[s.Values.Count - 1].ToString());
-            }
+            //s.SetDefault();
+            //s.Dbfile = dbfile;
+            //List<Company> list = s.GetTradeList();
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    s.Run(list);
+            //    Console.WriteLine(s.Values[s.Values.Count - 1].ToString());
+            //}
+            Console.ReadKey();
         }
 
-        static void GetNewDb(string dbfile, bool newdb)
+        static void GetNewDb(string dbfile, bool newdb, int num = -1)
         {
-            int num = -1;
-
             Trading.Database db = new Trading.Database(dbfile, newdb);
 
             Stopwatch sw = new Stopwatch();
@@ -78,6 +69,7 @@ namespace Test
             Trading.Debug.Nlog("Get all Ycharts took " + ((float)sw.ElapsedMilliseconds / 1000 / 60).ToString() + " minutes");
             db.DB.Dispose();
         }
+        #region OldSim
         static void RunSimulation(string dbfile)
         {
             Stopwatch sw = new Stopwatch();
@@ -178,7 +170,7 @@ namespace Test
                                             if (portfolio.Cash > 1000)
                                             {
                                                 Trading.Debug.Nlog("Bought " + c.Symbol);
-                                                portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, 1000.0f));
+                                                portfolio.Buy(new Asset(c.Symbol, c.CurrentCupHandle.Buy.Close, 1000.0f, thisDay));
                                             }
 
                                             c.CurrentCupHandle = new CupHandle(); //restart cuphandle
@@ -415,10 +407,11 @@ namespace Test
             Trading.Debug.Nlog("Finished");
             //Console.ReadKey();
         }
-            
+        #endregion
 
 
-        
+
+
     }
 
 

@@ -12,6 +12,7 @@ namespace Trading
         public string Symbol;
         public float TotalValue;
         public float PerShareInitial;
+        public float CurrentPerShare;
         public float CurrentTotalValue;
         public LocalDate BuyDate;
 
@@ -26,6 +27,7 @@ namespace Trading
 
         public float SetCurrentValue(float currentPerShare)
         {
+            CurrentPerShare = currentPerShare;
             CurrentTotalValue = TotalValue * (currentPerShare / PerShareInitial);
             return CurrentTotalValue;
         }

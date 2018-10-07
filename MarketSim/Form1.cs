@@ -21,7 +21,7 @@ namespace MarketSim
         }
 
         public List<Company> List = new List<Company>();
-        public Sim Simulation = new Sim();
+        public Simulation Sim = new Simulation();
 
         private void buttonOpenDb_Click(object sender, EventArgs e)
         {
@@ -44,15 +44,15 @@ namespace MarketSim
                 MessageBox.Show("Select a database file");
             else
             {
-                Simulation = new Sim();
-                Simulation.SetDefault();
-                Simulation.Dbfile = textBoxDbFile.Text;
+                Sim = new Simulation();
+                Sim.SetDefault();
+                Sim.Dbfile = textBoxDbFile.Text;
                 progressBar1.Style = ProgressBarStyle.Marquee;
                 progressBar1.MarqueeAnimationSpeed = 30;
 
                 var result = await Task.Run(() =>
                 {
-                    return Simulation.GetTradeList();
+                    return Sim.GetTradeList();
                 });
                 List = result;
                 labelStockCount.Text = "Total Stocks: " + List.Count.ToString();
@@ -75,16 +75,17 @@ namespace MarketSim
 
                     labelCurrentValue.Text = "Current value: " + ((int)r.Portfolio.GetTotalValue()).ToString();
                     //dataGridView1.DataSource = r.Dt;
+                    textBoxStatus.Text = r.Status;
 
                 });
-                Simulation = new Sim();
-                Simulation.SetDefault();
-                Simulation.Dbfile = textBoxDbFile.Text;
+                Sim = new Simulation();
+                Sim.SetDefault();
+                Sim.Dbfile = textBoxDbFile.Text;
                 progressBar1.Value = 0;
 
                 await Task.Run(() =>
                 {
-                    Simulation.Run(List, progress);
+                    Sim.Run(List, progress);
                 });
 
                 progressBar1.Value = 0;
@@ -97,6 +98,7 @@ namespace MarketSim
             Result r = arg.Result;
             labelCurrentDate.Text = "Current date: " + r.Date.Month.ToString() + "//" + r.Date.Day.ToString() + "//" + r.Date.Year.ToString();
             progressBar1.Value = (int)(r.PercComp * 100);
+            
         }
 
     }

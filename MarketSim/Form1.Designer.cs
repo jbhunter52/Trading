@@ -29,20 +29,19 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.buttonFilter = new System.Windows.Forms.Button();
-            this.buttonOpenDb = new System.Windows.Forms.Button();
-            this.textBoxDbFile = new System.Windows.Forms.TextBox();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.buttonRun = new System.Windows.Forms.Button();
-            this.labelCurrentDate = new System.Windows.Forms.Label();
-            this.labelStockCount = new System.Windows.Forms.Label();
             this.labelCurrentValue = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.labelStockCount = new System.Windows.Forms.Label();
+            this.labelCurrentDate = new System.Windows.Forms.Label();
+            this.buttonRun = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.textBoxDbFile = new System.Windows.Forms.TextBox();
+            this.buttonOpenDb = new System.Windows.Forms.Button();
+            this.buttonFilter = new System.Windows.Forms.Button();
+            this.textBoxStatus = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -65,44 +64,37 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxStatus);
             this.splitContainer1.Size = new System.Drawing.Size(698, 522);
             this.splitContainer1.SplitterDistance = 110;
             this.splitContainer1.TabIndex = 0;
             // 
-            // buttonFilter
+            // labelCurrentValue
             // 
-            this.buttonFilter.Location = new System.Drawing.Point(12, 38);
-            this.buttonFilter.Name = "buttonFilter";
-            this.buttonFilter.Size = new System.Drawing.Size(75, 23);
-            this.buttonFilter.TabIndex = 0;
-            this.buttonFilter.Text = "Filter";
-            this.buttonFilter.UseVisualStyleBackColor = true;
-            this.buttonFilter.Click += new System.EventHandler(this.buttonFilter_Click);
+            this.labelCurrentValue.AutoSize = true;
+            this.labelCurrentValue.Location = new System.Drawing.Point(490, 64);
+            this.labelCurrentValue.Name = "labelCurrentValue";
+            this.labelCurrentValue.Size = new System.Drawing.Size(74, 13);
+            this.labelCurrentValue.TabIndex = 7;
+            this.labelCurrentValue.Text = "Current Value:";
             // 
-            // buttonOpenDb
+            // labelStockCount
             // 
-            this.buttonOpenDb.Location = new System.Drawing.Point(388, 10);
-            this.buttonOpenDb.Name = "buttonOpenDb";
-            this.buttonOpenDb.Size = new System.Drawing.Size(75, 23);
-            this.buttonOpenDb.TabIndex = 1;
-            this.buttonOpenDb.Text = "Open Db";
-            this.buttonOpenDb.UseVisualStyleBackColor = true;
-            this.buttonOpenDb.Click += new System.EventHandler(this.buttonOpenDb_Click);
+            this.labelStockCount.AutoSize = true;
+            this.labelStockCount.Location = new System.Drawing.Point(93, 43);
+            this.labelStockCount.Name = "labelStockCount";
+            this.labelStockCount.Size = new System.Drawing.Size(73, 13);
+            this.labelStockCount.TabIndex = 6;
+            this.labelStockCount.Text = "Total Stocks: ";
             // 
-            // textBoxDbFile
+            // labelCurrentDate
             // 
-            this.textBoxDbFile.Location = new System.Drawing.Point(12, 12);
-            this.textBoxDbFile.Name = "textBoxDbFile";
-            this.textBoxDbFile.Size = new System.Drawing.Size(370, 20);
-            this.textBoxDbFile.TabIndex = 2;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(484, 9);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(202, 23);
-            this.progressBar1.TabIndex = 3;
+            this.labelCurrentDate.AutoSize = true;
+            this.labelCurrentDate.Location = new System.Drawing.Point(490, 38);
+            this.labelCurrentDate.Name = "labelCurrentDate";
+            this.labelCurrentDate.Size = new System.Drawing.Size(70, 13);
+            this.labelCurrentDate.TabIndex = 5;
+            this.labelCurrentDate.Text = "Current Date:";
             // 
             // buttonRun
             // 
@@ -114,41 +106,48 @@
             this.buttonRun.UseVisualStyleBackColor = true;
             this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
             // 
-            // labelCurrentDate
+            // progressBar1
             // 
-            this.labelCurrentDate.AutoSize = true;
-            this.labelCurrentDate.Location = new System.Drawing.Point(490, 38);
-            this.labelCurrentDate.Name = "labelCurrentDate";
-            this.labelCurrentDate.Size = new System.Drawing.Size(70, 13);
-            this.labelCurrentDate.TabIndex = 5;
-            this.labelCurrentDate.Text = "Current Date:";
+            this.progressBar1.Location = new System.Drawing.Point(484, 9);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(202, 23);
+            this.progressBar1.TabIndex = 3;
             // 
-            // labelStockCount
+            // textBoxDbFile
             // 
-            this.labelStockCount.AutoSize = true;
-            this.labelStockCount.Location = new System.Drawing.Point(93, 43);
-            this.labelStockCount.Name = "labelStockCount";
-            this.labelStockCount.Size = new System.Drawing.Size(73, 13);
-            this.labelStockCount.TabIndex = 6;
-            this.labelStockCount.Text = "Total Stocks: ";
+            this.textBoxDbFile.Location = new System.Drawing.Point(12, 12);
+            this.textBoxDbFile.Name = "textBoxDbFile";
+            this.textBoxDbFile.Size = new System.Drawing.Size(370, 20);
+            this.textBoxDbFile.TabIndex = 2;
             // 
-            // labelCurrentValue
+            // buttonOpenDb
             // 
-            this.labelCurrentValue.AutoSize = true;
-            this.labelCurrentValue.Location = new System.Drawing.Point(490, 64);
-            this.labelCurrentValue.Name = "labelCurrentValue";
-            this.labelCurrentValue.Size = new System.Drawing.Size(74, 13);
-            this.labelCurrentValue.TabIndex = 7;
-            this.labelCurrentValue.Text = "Current Value:";
+            this.buttonOpenDb.Location = new System.Drawing.Point(388, 10);
+            this.buttonOpenDb.Name = "buttonOpenDb";
+            this.buttonOpenDb.Size = new System.Drawing.Size(75, 23);
+            this.buttonOpenDb.TabIndex = 1;
+            this.buttonOpenDb.Text = "Open Db";
+            this.buttonOpenDb.UseVisualStyleBackColor = true;
+            this.buttonOpenDb.Click += new System.EventHandler(this.buttonOpenDb_Click);
             // 
-            // dataGridView1
+            // buttonFilter
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(698, 408);
-            this.dataGridView1.TabIndex = 0;
+            this.buttonFilter.Location = new System.Drawing.Point(12, 38);
+            this.buttonFilter.Name = "buttonFilter";
+            this.buttonFilter.Size = new System.Drawing.Size(75, 23);
+            this.buttonFilter.TabIndex = 0;
+            this.buttonFilter.Text = "Filter";
+            this.buttonFilter.UseVisualStyleBackColor = true;
+            this.buttonFilter.Click += new System.EventHandler(this.buttonFilter_Click);
+            // 
+            // textBoxStatus
+            // 
+            this.textBoxStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxStatus.Location = new System.Drawing.Point(0, 0);
+            this.textBoxStatus.Multiline = true;
+            this.textBoxStatus.Name = "textBoxStatus";
+            this.textBoxStatus.Size = new System.Drawing.Size(698, 408);
+            this.textBoxStatus.TabIndex = 0;
             // 
             // Form1
             // 
@@ -161,9 +160,9 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -179,7 +178,7 @@
         private System.Windows.Forms.Label labelCurrentDate;
         private System.Windows.Forms.Label labelStockCount;
         private System.Windows.Forms.Label labelCurrentValue;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.TextBox textBoxStatus;
     }
 }
 

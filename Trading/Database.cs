@@ -204,5 +204,6 @@ namespace Trading
             int day = Int16.Parse(s.Substring(6,2));
             return new NodaTime.LocalDate(year, month, day);
         }
+
     }
 }
