@@ -16,10 +16,24 @@ namespace Test
         static void Main(string[] args)
         {
             //string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-6-18_small.db";
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18.db";
+            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18_update.db";
             //GetNewDb(dbfile, true, 200);
 
             //GetYChartsDb(dbfile);
+
+            //Trading.Database db = new Trading.Database(dbfile, false);
+            //List<Company> list = new List<Company>();
+
+            //var col = db.DB.GetCollection<Trading.Company>("data");
+            //list = col.FindAll().ToList();
+            ////list = col.Find(Query.Where("EarningsData", earnings => earnings.AsArray.Count > 0)).ToList();
+            //foreach (Company c in list)
+            //{
+            //    c.SetHighToDateSeries();
+            //    col.Update(c.Id, c);
+            //}
+
+
 
             Simulation sim = new Simulation();
             Console.WriteLine("Initializing...");

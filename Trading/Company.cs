@@ -34,10 +34,11 @@ namespace Trading
         public float MinClose { get; set; }
         public float MinVolume { get; set; }
         public float maxDayChangePerc { get; set; }
-        //public List<CupHandle> FullCupHandles { get; set; }
         public CupHandle CurrentCupHandle { get; set; }
         public List<LocalDate> EarningsQuarters { get; set; }
         public List<float> EarningsData { get; set; }
+        public List<float> EarningsGrowth { get; set; }   //EPS growth for each day
+        public List<float> CloseHighToDate { get; set; }  //Highest close value in series up to date
 
         public Company(string symbol, List<HistoricalDataResponse> data, SymbolData sym = null)
         {
@@ -59,11 +60,12 @@ namespace Trading
             MovingAverageVolume = new List<int>();
             RelativePriceVolume = new List<float>();
             MovingRelativePriceVolume = new List<float>();
-            //FullCupHandles = new List<CupHandle>();
             CurrentCupHandle = new CupHandle();
-            //Earnings = new EarningsData();
             EarningsQuarters = new List<LocalDate>();
             EarningsData = new List<float>();
+            EarningsGrowth = new List<float>();
+            CloseHighToDate = new List<float>();
+
 
             this.Symbol = symbol;
             if (sym != null)
@@ -87,10 +89,6 @@ namespace Trading
                 vwap.Add(d.vwap);
                 label.Add(d.label);
                 changeOverTime.Add(d.changeOverTime);
-                //MovingAverageClose.Add(d.MovingAverageClose);
-                //MovingAverageVolume.Add(d.MovingAverageVolume);
-                //RelativePriceVolume.Add(d.RelativePriceVolume);
-                //MovingRelativePriceVolume.Add(d.MovingRelativePriceVolume);
                 Count++;
             }
 
@@ -105,10 +103,6 @@ namespace Trading
             }
             maxDayChangePerc = changeSpread.Max();
 
-
-            //Maybe it would be faster to reverse???
-            //this.Data.OrderBy(x => DateTime.Parse(x.date));
-
             MovingAverageClose = MathHelpers.MovingAverage(close, 50);
             MovingAverageVolume = MathHelpers.MovingAverage(volume, 50);
 
@@ -119,9 +113,6 @@ namespace Trading
                 RelativePriceVolume.Add(volume[i] * y);
             }
             MovingRelativePriceVolume = MathHelpers.MovingAverage(RelativePriceVolume, 50);
-          
-            //EarningsData
-            //Earnings = earnings;
         }
 
         public Company()
@@ -171,10 +162,15 @@ namespace Trading
 
         public bool IsHighToDate(int i)
         {
-            List<float> val = close.GetRange(0, i + 1);
+            //List<float> val = close.GetRange(0, i + 1);
 
-            float today = close[i];
-            if (today == val.Max())
+            //float today = close[i];
+            //if (today == val.Max())
+            //    return true;
+            //else
+            //    return false;
+
+            if (close[i] == CloseHighToDate[i])
                 return true;
             else
                 return false;
@@ -235,5 +231,29 @@ namespace Trading
             float growth = (thisEps - prevEps) / prevEps;
             return growth;
         }
+
+        public void SetEarningsGrowthSeries(int minQuarters)
+        {
+            EarningsGrowth = new List<float>();
+
+            for (int i = 0; i < close.Count; i++)
+            {
+                EarningsGrowth.Add(ComputeEarningsGrowth(date[i], minQuarters));
+            }
+        }
+
+        public void SetHighToDateSeries()
+        {
+            CloseHighToDate = new List<float>();
+
+            float high = 0;
+            foreach (float val in close)
+            {
+                if (val > high)
+                    high = val;
+                CloseHighToDate.Add(high);
+            }
+        }
+        
     }
 }

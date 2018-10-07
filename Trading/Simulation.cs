@@ -56,8 +56,6 @@ namespace Trading
             for (int i = 0; i < list.Count; i++)
             {
                 Company c = list[i];
-                c.CurrentCupHandle = new CupHandle();
-                c.Iterator = -1; //reset iterator
             }
             Trading.Debug.Nlog("Database query time, " + sw.Elapsed.TotalMinutes.ToString() + " minutes");
             sw.Reset();
@@ -78,11 +76,13 @@ namespace Trading
             Dates = new List<LocalDate>();
             Values = new List<float>();
 
-            //initialize iterator
-            //foreach (Company c in list)
-            //{
-            //    c.Iterator = -1;
-            //}
+            //initialize dynamic Company members
+            foreach (Company c in list)
+            {
+                c.SetEarningsGrowthSeries(MinNumPrevQuarters);
+                c.CurrentCupHandle = new CupHandle();
+                c.Iterator = -1; //reset iterator
+            }
 
             int runDays = Period.Between(StartDay, EndDay, PeriodUnits.Days).Days;
             List<CupHandle> cupHandles = new List<CupHandle>();
@@ -125,7 +125,8 @@ namespace Trading
                             //thisDayInd = c.Iterator;
                             //thisDay = c.date[c.Iterator];
 
-                            float epsGrowth = c.ComputeEarningsGrowth(thisDay, MinNumPrevQuarters);
+                            //float epsGrowth = c.ComputeEarningsGrowth(thisDay, MinNumPrevQuarters);
+                            float epsGrowth = c.EarningsGrowth[thisDayInd];
                             if (epsGrowth == float.NaN || epsGrowth < MinEpsGrowth)
                                 continue;
 
