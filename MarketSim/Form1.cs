@@ -78,14 +78,22 @@ namespace MarketSim
                     textBoxStatus.Text = r.Status;
 
                 });
-                Sim = new Simulation();
-                Sim.SetDefault();
-                Sim.Dbfile = textBoxDbFile.Text;
+                Simulation sim = new Simulation();
+
+                sim.Dbfile = textBoxDbFile.Text;
+                sim.SetDefault();
+                sim.MinEpsGrowth = 0.5f;
+                sim.MinNumPrevQuarters = 3;
+                sim.Portfolio.StopLoss = 0.88f;
+                sim.Portfolio.StopGain = 1.5f;
+                sim.Chp.MinRank = 9;
+
                 progressBar1.Value = 0;
+                
 
                 await Task.Run(() =>
                 {
-                    Sim.Run(List, progress);
+                    sim.Run(List, progress);
                 });
 
                 progressBar1.Value = 0;

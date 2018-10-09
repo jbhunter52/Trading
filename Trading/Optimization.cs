@@ -36,7 +36,7 @@ namespace Trading
             // Rank StopGain StopLoss MinEpsGrowth
 
             var chromosome = new SimChromosome();
-            var population = new Population(5, 15, chromosome);
+            var population = new Population(25, 50, chromosome);
 
             var fitness = new SimFitness(List, Dbfile);
 
@@ -55,8 +55,9 @@ namespace Trading
             if (parallel)
             {
                 var taskExecutor = new ParallelTaskExecutor();
-                taskExecutor.MinThreads = 2;
-                taskExecutor.MaxThreads = 4;
+                taskExecutor.MinThreads = 4;
+                taskExecutor.MaxThreads = 12;
+                ga.TaskExecutor = taskExecutor;
             }
 
             ga.Termination = termination;

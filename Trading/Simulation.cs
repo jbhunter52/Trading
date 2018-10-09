@@ -23,6 +23,7 @@ namespace Trading
         public CupHandleParameters Chp;
         public List<LocalDate> Dates;
         public List<float> Values;
+        public List<Company> List;
 
         public Simulation()
         {
@@ -65,11 +66,14 @@ namespace Trading
             Trading.Debug.Nlog("After filter " + list.Count.ToString() + " stocks");
             Trading.Debug.Nlog("Filter " + ((float)sw.ElapsedMilliseconds / 1000).ToString() + " seconds");
 
+            List = list;
             return list;
         }
 
-        public void Run(List<Company> list, IProgress<Result> progress = null)
+        public void Run(List<Company> list = null, IProgress<Result> progress = null)
         {
+            if (list == null)
+                list = List;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 

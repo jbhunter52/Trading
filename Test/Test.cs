@@ -15,8 +15,8 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            //string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-6-18_small.db";
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18_update.db";
+            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-6-18_small.db";
+            //string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18_update.db";
             //GetNewDb(dbfile, true, 200);
 
             //GetYChartsDb(dbfile);
@@ -42,9 +42,10 @@ namespace Test
             List<Company> list = sim.GetTradeList();
 
             sim.Run(list);
+            Console.WriteLine(sim.Portfolio.GetTotalValue().ToString());
 
-            Optimization ga = new Optimization(dbfile);
-            ga.Optimize(true);
+            //Optimization ga = new Optimization(dbfile);
+            //ga.Optimize();
 
             //s.SetDefault();
             //s.Dbfile = dbfile;
