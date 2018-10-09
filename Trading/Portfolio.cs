@@ -14,11 +14,13 @@ namespace Trading
         public float StopGain;
         public float StopLoss;
         public float BuyAmount;
+        public float StartCash;
 
         public Portfolio(float cash, float stopGain, float stopLoss, float buyAmount)
         {
             Assets = new List<Asset>();
             Cash = cash;
+            StartCash = cash;
             StopGain = stopGain;
             StopLoss = stopLoss;
             BuyAmount = buyAmount;

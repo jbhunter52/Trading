@@ -79,6 +79,8 @@ namespace Trading
 
             Dates = new List<LocalDate>();
             Values = new List<float>();
+            Portfolio.Cash = Portfolio.StartCash;
+            Portfolio.Assets = new List<Asset>();
 
             //initialize dynamic Company members
             foreach (Company c in list)
