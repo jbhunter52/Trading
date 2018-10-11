@@ -18,6 +18,12 @@ namespace MarketSim
         public Form1()
         {
             InitializeComponent();
+
+            textBoxTotalRank.Text = "9.0";
+            textBoxMinSingleRank.Text = "2.0";
+            textBoxStopLoss.Text = "0.9";
+            textBoxStopGain.Text = "1.4";
+            textBoxMinEpsGrowth.Text = "0.4";
         }
 
         public List<Company> List = new List<Company>();
@@ -82,11 +88,13 @@ namespace MarketSim
 
                 sim.Dbfile = textBoxDbFile.Text;
                 sim.SetDefault();
-                sim.MinEpsGrowth = 0.5f;
                 sim.MinNumPrevQuarters = 3;
-                sim.Portfolio.StopLoss = 0.88f;
-                sim.Portfolio.StopGain = 1.5f;
-                sim.Chp.MinRank = 9;
+
+                sim.Chp.MinRank = float.Parse(textBoxTotalRank.Text);
+                sim.Chp.MinSingleRank = float.Parse(textBoxMinSingleRank.Text);
+                sim.Portfolio.StopLoss = float.Parse(textBoxStopLoss.Text);
+                sim.Portfolio.StopGain = float.Parse(textBoxStopGain.Text);
+                sim.MinEpsGrowth = float.Parse(textBoxMinEpsGrowth.Text);
 
                 progressBar1.Value = 0;
                 
@@ -108,6 +116,7 @@ namespace MarketSim
             progressBar1.Value = (int)(r.PercComp * 100);
             
         }
+
 
     }
 }

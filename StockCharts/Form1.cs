@@ -51,7 +51,7 @@ namespace StockCharts
 
             chartValue.MouseWheel += chart1_MouseWheel;
 
-            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks2RBC_9-19-18.db";
+            string dbfile = @"C:\Users\Jared\AppData\Local\TradeData\Stocks-10-5-18_update.db";
             string cupDbFile = Path.Combine(Path.GetDirectoryName(dbfile), Path.GetFileNameWithoutExtension(dbfile) + "_ch.db");
 
             bool overwrite = false;
@@ -65,7 +65,7 @@ namespace StockCharts
             colch = chdb.GetCollection<CupHandle>("CupHandle");
 
             int num = colch.Count();
-            for (int i = 1; i < 50; i++)
+            for (int i = 1; i < colch.Count(); i++)
             {
                 Company c = col.FindById(i);
                 cList.Add(c);

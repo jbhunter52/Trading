@@ -38,15 +38,19 @@ namespace OptimizationServer
                         
                     string parameters = File.ReadAllLines(pFile)[0];
                     string[] p = parameters.Split(',');
-                    float minRank = float.Parse(p[0]);
-                    float stopGain = float.Parse(p[1]);
-                    float stopLoss = float.Parse(p[2]);
-                    float minGrowth = float.Parse(p[3]);
 
-                    sim.Chp.MinRank = minRank;
+                    float minTotalRank = float.Parse(p[0]);
+                    float minSingleRank = float.Parse(p[1]);
+                    float stopGain = float.Parse(p[2]);
+                    float stopLoss = float.Parse(p[3]);
+                    float minGrowth = float.Parse(p[4]);
+
+                    sim.Chp.MinRank = minTotalRank;
+                    sim.Chp.MinSingleRank = minSingleRank;
                     sim.Portfolio.StopGain = stopGain;
                     sim.Portfolio.StopLoss = stopLoss;
                     sim.MinEpsGrowth = minGrowth;
+
                     sim.Run();
                     Console.WriteLine(parameters + "," + sim.Portfolio.GetTotalValue().ToString());
                     File.Delete(pFile);

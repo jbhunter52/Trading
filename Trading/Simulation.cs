@@ -346,10 +346,9 @@ namespace Trading
                                                         //D found !!!
                                                         //Debug.Nlog("D found!!!");
                                                         c.CurrentCupHandle.R2 = R2arr[ind];
-                                                        if (c.CurrentCupHandle.GetRank() > Chp.MinRank)
+                                                        if (c.CurrentCupHandle.GetRank() > Chp.MinRank && c.CurrentCupHandle.GetMinimumRank() > Chp.MinSingleRank)
                                                         {
                                                             LocalDate dDate = c.date[bestR2Index];
-
                                                             c.CurrentCupHandle.D = c.GetPoint(bestR2Index);
                                                         }
 
@@ -393,8 +392,12 @@ namespace Trading
 
                     }
                     float endOfDayValue = Portfolio.GetTotalValue();
+                    float slope;
+                    float rSquared;
+                    MathHelpers.LinearRegression(Values.ToArray(), out rSquared, out slope);
                     string mess = thisDay.ToString() + ", " + endOfDayValue.ToString() + ", Total Assets: " + Portfolio.Assets.Count.ToString();
                     Trading.Debug.Nlog(mess);
+                    Trading.Debug.Nlog(Portfolio.AllAssetsToString());
                     //end of trading day loop
                 }
             }

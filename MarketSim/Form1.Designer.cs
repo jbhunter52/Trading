@@ -29,6 +29,15 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.textBoxMinSingleRank = new System.Windows.Forms.TextBox();
+            this.textBoxStopLoss = new System.Windows.Forms.TextBox();
+            this.textBoxStopGain = new System.Windows.Forms.TextBox();
+            this.textBoxTotalRank = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.labelCurrentValue = new System.Windows.Forms.Label();
             this.labelStockCount = new System.Windows.Forms.Label();
             this.labelCurrentDate = new System.Windows.Forms.Label();
@@ -38,6 +47,7 @@
             this.buttonOpenDb = new System.Windows.Forms.Button();
             this.buttonFilter = new System.Windows.Forms.Button();
             this.textBoxStatus = new System.Windows.Forms.TextBox();
+            this.textBoxMinEpsGrowth = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -53,6 +63,16 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxMinEpsGrowth);
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxMinSingleRank);
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxStopLoss);
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxStopGain);
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxTotalRank);
+            this.splitContainer1.Panel1.Controls.Add(this.label5);
+            this.splitContainer1.Panel1.Controls.Add(this.label4);
+            this.splitContainer1.Panel1.Controls.Add(this.label3);
+            this.splitContainer1.Panel1.Controls.Add(this.label2);
+            this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.labelCurrentValue);
             this.splitContainer1.Panel1.Controls.Add(this.labelStockCount);
             this.splitContainer1.Panel1.Controls.Add(this.labelCurrentDate);
@@ -65,14 +85,87 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.textBoxStatus);
-            this.splitContainer1.Size = new System.Drawing.Size(698, 522);
-            this.splitContainer1.SplitterDistance = 110;
+            this.splitContainer1.Size = new System.Drawing.Size(698, 622);
+            this.splitContainer1.SplitterDistance = 152;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // textBoxMinSingleRank
+            // 
+            this.textBoxMinSingleRank.Location = new System.Drawing.Point(302, 84);
+            this.textBoxMinSingleRank.Name = "textBoxMinSingleRank";
+            this.textBoxMinSingleRank.Size = new System.Drawing.Size(53, 20);
+            this.textBoxMinSingleRank.TabIndex = 16;
+            // 
+            // textBoxStopLoss
+            // 
+            this.textBoxStopLoss.Location = new System.Drawing.Point(430, 84);
+            this.textBoxStopLoss.Name = "textBoxStopLoss";
+            this.textBoxStopLoss.Size = new System.Drawing.Size(53, 20);
+            this.textBoxStopLoss.TabIndex = 15;
+            // 
+            // textBoxStopGain
+            // 
+            this.textBoxStopGain.Location = new System.Drawing.Point(430, 60);
+            this.textBoxStopGain.Name = "textBoxStopGain";
+            this.textBoxStopGain.Size = new System.Drawing.Size(53, 20);
+            this.textBoxStopGain.TabIndex = 14;
+            // 
+            // textBoxTotalRank
+            // 
+            this.textBoxTotalRank.Location = new System.Drawing.Point(302, 58);
+            this.textBoxTotalRank.Name = "textBoxTotalRank";
+            this.textBoxTotalRank.Size = new System.Drawing.Size(53, 20);
+            this.textBoxTotalRank.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(216, 113);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(82, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Min Eps Growth";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(370, 87);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(54, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Stop Loss";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(370, 63);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(54, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Stop Gain";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(211, 87);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Min Single Rank";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(216, 62);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(80, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Min Total Rank";
             // 
             // labelCurrentValue
             // 
             this.labelCurrentValue.AutoSize = true;
-            this.labelCurrentValue.Location = new System.Drawing.Point(490, 64);
+            this.labelCurrentValue.Location = new System.Drawing.Point(534, 62);
             this.labelCurrentValue.Name = "labelCurrentValue";
             this.labelCurrentValue.Size = new System.Drawing.Size(74, 13);
             this.labelCurrentValue.TabIndex = 7;
@@ -90,7 +183,7 @@
             // labelCurrentDate
             // 
             this.labelCurrentDate.AutoSize = true;
-            this.labelCurrentDate.Location = new System.Drawing.Point(490, 38);
+            this.labelCurrentDate.Location = new System.Drawing.Point(534, 36);
             this.labelCurrentDate.Name = "labelCurrentDate";
             this.labelCurrentDate.Size = new System.Drawing.Size(70, 13);
             this.labelCurrentDate.TabIndex = 5;
@@ -98,7 +191,7 @@
             // 
             // buttonRun
             // 
-            this.buttonRun.Location = new System.Drawing.Point(306, 64);
+            this.buttonRun.Location = new System.Drawing.Point(12, 67);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(75, 23);
             this.buttonRun.TabIndex = 4;
@@ -146,14 +239,21 @@
             this.textBoxStatus.Location = new System.Drawing.Point(0, 0);
             this.textBoxStatus.Multiline = true;
             this.textBoxStatus.Name = "textBoxStatus";
-            this.textBoxStatus.Size = new System.Drawing.Size(698, 408);
+            this.textBoxStatus.Size = new System.Drawing.Size(698, 466);
             this.textBoxStatus.TabIndex = 0;
+            // 
+            // textBoxMinEpsGrowth
+            // 
+            this.textBoxMinEpsGrowth.Location = new System.Drawing.Point(302, 110);
+            this.textBoxMinEpsGrowth.Name = "textBoxMinEpsGrowth";
+            this.textBoxMinEpsGrowth.Size = new System.Drawing.Size(53, 20);
+            this.textBoxMinEpsGrowth.TabIndex = 17;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(698, 522);
+            this.ClientSize = new System.Drawing.Size(698, 622);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -179,6 +279,16 @@
         private System.Windows.Forms.Label labelStockCount;
         private System.Windows.Forms.Label labelCurrentValue;
         private System.Windows.Forms.TextBox textBoxStatus;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBoxMinSingleRank;
+        private System.Windows.Forms.TextBox textBoxStopLoss;
+        private System.Windows.Forms.TextBox textBoxStopGain;
+        private System.Windows.Forms.TextBox textBoxTotalRank;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBoxMinEpsGrowth;
     }
 }
 

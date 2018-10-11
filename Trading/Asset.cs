@@ -31,5 +31,10 @@ namespace Trading
             CurrentTotalValue = TotalValue * (currentPerShare / PerShareInitial);
             return CurrentTotalValue;
         }
+
+        public string ToString()
+        {
+            return string.Format("{0}, TotalValue={1}, PerShareInitial={2}, CurrentPerShare={3}, CurrentTotalValue={4}", Symbol, TotalValue, PerShareInitial, CurrentPerShare, CurrentTotalValue);
+        }
     }
 }

@@ -59,5 +59,15 @@ namespace Trading
             }
             return val;
         }
+
+        public string AllAssetsToString()
+        {
+            string s = "\n";
+            foreach (Asset a in Assets)
+            {
+                s += a.ToString() + "\n";
+            }
+            return s;
+        }
     }
 }

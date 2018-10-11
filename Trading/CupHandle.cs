@@ -112,6 +112,16 @@ namespace Trading
         {
             return R1 + R2 + R3;
         }
+
+        public float GetMinimumRank()
+        {
+            float min = R1;
+            if (R2 < min)
+                min = R2;
+            if (R3 < min)
+                min = R3;
+            return min;
+        }
     }
 
     [ZeroFormattable]
@@ -124,20 +134,22 @@ namespace Trading
         public Range<int> AC { get; set; }
         public Range<float> PivotRatio { get; set; } //Pc/Pa
         public float BuyWait { get; set; }
-        public float MinRank;
+        public float MinRank { get; set; }
+        public float MinSingleRank { get; set; }
         public float CBdiffMin { get; set; }
 
-        public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio, float minRank)
-        {
-            Setup = setup;
-            CupLeft = cupLeft;
-            CupRight = cupRight;
-            Handle = handle;
-            AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
-            BuyWait = 0.5f;
-            MinRank = minRank;
-            CBdiffMin = 0.5f;
-        }
+        //public CupHandleParameters(Range<int> setup, Range<int> cupLeft, Range<int> cupRight, Range<int> handle, Range<float> pivotRatio, float minRank)
+        //{
+        //    Setup = setup;
+        //    CupLeft = cupLeft;
+        //    CupRight = cupRight;
+        //    Handle = handle;
+        //    AC = new Range<int>(cupLeft.Minimum + cupRight.Minimum, cupLeft.Maximum + cupRight.Maximum);
+        //    BuyWait = 0.5f;
+        //    MinRank = minRank;
+        //    CBdiffMin = 0.5f;
+        //    MinSingleRank = 0.0f;
+        //}
         public string Serialize()
         {
             byte[] bytes = ZeroFormatterSerializer.Serialize(this);
@@ -154,7 +166,8 @@ namespace Trading
             AC = chp.AC;
             PivotRatio = chp.PivotRatio;
             BuyWait = chp.BuyWait;
-            CBdiffMin = 0.5f;
+            CBdiffMin = chp.CBdiffMin;
+            MinSingleRank = chp.MinSingleRank;
         }
 
         public CupHandleParameters(CupHandleDefinition ch)
@@ -169,6 +182,7 @@ namespace Trading
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
                 BuyWait = 0.5f;
                 MinRank = 8;
+                MinSingleRank = 0.0f;
             }
             if (ch == CupHandleDefinition.Haiku3)
             {
@@ -179,6 +193,7 @@ namespace Trading
                 PivotRatio = new Range<float>(0.78f, 1.1f);
                 AC = new Range<int>(CupLeft.Minimum + CupRight.Minimum, CupLeft.Maximum + CupRight.Maximum);
                 MinRank = 8;
+                MinSingleRank = 0.0f;
             }
         }
     }
